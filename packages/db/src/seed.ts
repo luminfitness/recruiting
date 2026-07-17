@@ -73,6 +73,9 @@ async function main() {
 
   await db.insert(schema.thresholdSettings).values({ orgId: org.id });
 
+  // A vendor-side platform admin (Grounded Labs) for the /platform console.
+  await db.insert(schema.platformAdmins).values({ email: "ops@groundedlabs.example" });
+
   for (const roleType of ["trainer", "manager"] as const) {
     await db.insert(schema.scorecardCriteriaVersions).values({ orgId: org.id, roleType, version: 1, schema: SCORECARD_V1[roleType], active: true });
     await db.insert(schema.quizDefinitions).values({ orgId: org.id, roleType, version: 1, schema: QUIZ_V1[roleType], active: true });

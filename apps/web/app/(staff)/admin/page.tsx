@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { withRequestContext } from "@usapt/db";
 import { brands, markets, organizations, userRoles, users } from "@usapt/db/schema";
 import { requireUser, hasRole } from "@/lib/auth";
-import { createBrandAction, createMarketAction, createUserAction } from "./actions";
+import { assignMarketScopeAction, createBrandAction, createMarketAction, createUserAction, deactivateUserAction, reactivateUserAction } from "./actions";
 
 const ROLE_OPTIONS = ["admin", "recruiting_lead", "trainer_coordinator", "territory_manager", "local_manager"];
 
@@ -114,14 +114,51 @@ export default async function AdminPage() {
         <h3 style={headingStyle}>Users</h3>
         <ul style={{ listStyle: "none", padding: 0, marginTop: 12 }}>
           {data.userRows.map((u) => (
-            <li key={u.id} style={{ padding: "10px 0", borderBottom: "1px solid var(--usapt-border)" }}>
-              <strong>{u.name}</strong> <span style={{ color: "var(--usapt-text-muted)" }}>{u.email}</span>
-              <div style={{ fontSize: 12, color: "var(--usapt-text-muted)", marginTop: 4 }}>
-                Roles: {(rolesByUser.get(u.id) ?? []).join(", ") || "none"}
+            <li key={u.id} style={{ padding: "10px 0", borderBottom: "1px solid var(--usapt-border)", display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, opacity: u.deactivatedAt ? 0.55 : 1 }}>
+              <div>
+                <strong>{u.name}</strong> <span style={{ color: "var(--usapt-text-muted)" }}>{u.email}</span>
+                {u.deactivatedAt ? <span style={{ fontSize: 11, marginLeft: 6, color: "var(--status-negative-text)", background: "var(--status-negative-fill)", padding: "1px 6px" }}>deactivated</span> : null}
+                <div style={{ fontSize: 12, color: "var(--usapt-text-muted)", marginTop: 4 }}>
+                  Roles: {(rolesByUser.get(u.id) ?? []).join(", ") || "none"}
+                </div>
               </div>
+              {u.id !== authedUser.userId ? (
+                u.deactivatedAt ? (
+                  <form action={reactivateUserAction.bind(null, u.id)}>
+                    <button type="submit" style={{ ...inputStyle, cursor: "pointer", fontSize: 12 }}>Reactivate</button>
+                  </form>
+                ) : (
+                  <form action={deactivateUserAction.bind(null, u.id)}>
+                    <button type="submit" style={{ ...inputStyle, cursor: "pointer", fontSize: 12, color: "var(--status-risk-text)" }}>Deactivate</button>
+                  </form>
+                )
+              ) : null}
             </li>
           ))}
         </ul>
+
+        <div style={{ marginTop: 16, padding: 12, background: "var(--usapt-surface)", border: "1px solid var(--usapt-border)" }}>
+          <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 8 }}>Assign a market-scoped role</div>
+          <form action={assignMarketScopeAction} style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+            <select name="userId" required style={inputStyle}>
+              <option value="">User…</option>
+              {data.userRows.filter((u) => !u.deactivatedAt).map((u) => (
+                <option key={u.id} value={u.id}>{u.name}</option>
+              ))}
+            </select>
+            <select name="role" required style={inputStyle} defaultValue="local_manager">
+              <option value="local_manager">local_manager</option>
+              <option value="territory_manager">territory_manager</option>
+            </select>
+            <select name="marketId" required style={inputStyle}>
+              <option value="">Market…</option>
+              {data.marketRows.filter((m) => brandById.has(m.brandId)).map((m) => (
+                <option key={m.id} value={m.id}>{m.name}</option>
+              ))}
+            </select>
+            <button type="submit" style={buttonStyle}>Grant scope</button>
+          </form>
+        </div>
         <form action={createUserAction} style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
           <input name="name" placeholder="Full name" required style={inputStyle} />
           <input name="email" type="email" placeholder="email@usapt.example" required style={inputStyle} />
