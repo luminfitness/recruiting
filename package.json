@@ -1,0 +1,19 @@
+{
+  "name": "usapt-recruiting-platform",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "pnpm --filter web dev",
+    "build": "pnpm --filter web build",
+    "db:generate": "pnpm --filter @usapt/db generate",
+    "db:migrate": "pnpm --filter @usapt/db migrate",
+    "db:seed": "pnpm --filter @usapt/db seed",
+    "db:dev:start": "pnpm --filter @usapt/db dev:db:start",
+    "db:dev:stop": "pnpm --filter @usapt/db dev:db:stop",
+    "db:dev:reset": "pnpm --filter @usapt/db dev:db:reset",
+    "test": "pnpm -r test"
+  }
+}

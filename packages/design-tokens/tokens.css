@@ -1,0 +1,85 @@
+/* ============================================================================
+   USAPT Recruiting Platform — Design Tokens
+   Source of truth: Claude Design project "USAPT Recruiting Platform Design"
+   (tokens.css / tokens.json, Modernist design system). Copied verbatim where
+   the value is a real CSS custom property; the string-valued brand identity
+   fields (name/sender/logo) are NOT CSS-representable and instead live in
+   packages/design-tokens/src/tokens.ts as a typed BrandTheme, populated per
+   Brand row at request time by ThemeProvider — see src/ThemeProvider.tsx.
+
+   Layers:
+     1. Base (from Modernist)   — ground, ink, corporate accent, neutral ramp
+     2. Semantic               — surface / border / text hierarchy
+     3. Status taxonomy        — FIVE families only (FRD constraint)
+     4. Brand theme layer      — swappable per candidate-facing brand (color-only)
+   ========================================================================== */
+
+:root {
+  /* — 1. Base (Modernist) ------------------------------------------------ */
+  --usapt-bg:            #f3f2f2;
+  --usapt-surface:       #eae9e9;
+  --usapt-ink:           #201e1d;
+  --usapt-brand-blue:    #0e4091;   /* USA PT corporate navy — nav rail, brand identity, screen kickers */
+  --usapt-brand-red:     #e71f2a;   /* matched from logo — primary actions, small emphasis */
+
+  --usapt-neutral-100:   #f8f4f4;
+  --usapt-neutral-200:   #eae7e7;
+  --usapt-neutral-300:   #d7d3d3;
+  --usapt-neutral-400:   #bab6b6;
+  --usapt-neutral-500:   #9b9797;
+  --usapt-neutral-600:   #7d7979;
+  --usapt-neutral-700:   #605d5d;
+  --usapt-neutral-800:   #444141;
+  --usapt-neutral-900:   #2d2b2b;
+
+  /* — 2. Semantic -------------------------------------------------------- */
+  --usapt-text:          #201e1d;
+  --usapt-text-muted:    #605d5d;
+  --usapt-text-faint:    #9b9797;
+  --usapt-border:        #d7d3d3;
+  --usapt-border-strong: #201e1d;   /* the 2px modular rule */
+
+  /* — 3. Status taxonomy (FIVE families; differentiate WITHIN by label) -- */
+  --status-motion-fill:   #e8eef5;
+  --status-motion-text:   #244a72;
+  --status-motion-marker: #3d6da3;
+
+  --status-action-fill:   #fbefd6;
+  --status-action-text:   #7a4d05;
+  --status-action-marker: #c07d13;
+
+  --status-positive-fill:   #dcefe2;
+  --status-positive-text:   #1e5537;
+  --status-positive-marker: #2f8158;
+
+  --status-negative-fill:   #eae7e7;
+  --status-negative-text:   #605d5d;
+  --status-negative-marker: #9b9797;
+
+  --status-risk-fill:   #ffe0d9;
+  --status-risk-text:   #7c1405;
+  --status-risk-marker: #e71f2a;
+
+  /* — Chart palette (funnel + conversion) ------------------------------- */
+  --chart-1: #3d6da3;
+  --chart-2: #2f8158;
+  --chart-3: #c07d13;
+  --chart-4: #7d7979;
+  --chart-5: #e71f2a;
+
+  /* — Spacing / radius / elevation (Modernist: 1.00x, 0 radius) --------- */
+  --usapt-space-1: 4px;  --usapt-space-2: 8px;  --usapt-space-3: 12px;
+  --usapt-space-4: 16px; --usapt-space-6: 24px; --usapt-space-8: 32px;
+  --usapt-radius: 0px;
+  --usapt-shadow-sm: 0 1px 2px color-mix(in srgb, #2d2b2b 14%, transparent);
+  --usapt-shadow-md: 0 3px 10px color-mix(in srgb, #2d2b2b 16%, transparent);
+  --usapt-shadow-lg: 0 12px 32px color-mix(in srgb, #2d2b2b 22%, transparent);
+
+  /* — 4. Brand theme layer (color-only; default = USAPT corporate) ------
+     Candidate-facing surfaces (the (candidate) route group) read ONLY
+     these three color tokens, overridden per-Brand by ThemeProvider.
+     Staff surfaces never read this layer. */
+  --brand-primary: #0e4091;
+  --brand-ink:     #201e1d;
+  --brand-tint:    #e7edf6;
+}

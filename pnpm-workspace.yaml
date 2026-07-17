@@ -1,0 +1,13 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+
+allowBuilds:
+  '@embedded-postgres/darwin-arm64': true
+  esbuild: true
+  sharp: false
+  unrs-resolver: false
+
+ignoredBuiltDependencies:
+  - sharp
+  - unrs-resolver

@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "web",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": ["-c", "export PATH=\"$HOME/.local/node/bin:$PATH\"; cd apps/web && npx next dev"],
+      "port": 3000
+    }
+  ]
+}

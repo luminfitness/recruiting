@@ -1,0 +1,20 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1784236575751,
+      "tag": "0000_brief_star_brand",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1784236588739,
+      "tag": "0001_rls_policies",
+      "breakpoints": true
+    }
+  ]
+}

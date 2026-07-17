@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+body {
+  background: var(--usapt-bg);
+  color: var(--usapt-ink);
+  font-family: var(--font-archivo), system-ui, sans-serif;
+}
+
+.usapt-scroll::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+.usapt-scroll::-webkit-scrollbar-thumb {
+  background: var(--usapt-neutral-400);
+}
+.usapt-scroll::-webkit-scrollbar-track {
+  background: var(--usapt-neutral-200);
+}
