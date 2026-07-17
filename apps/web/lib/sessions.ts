@@ -4,6 +4,7 @@ import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import type * as dbSchema from "@usapt/db/schema";
 import { attendanceEvents, brands, candidates, interviewSessions, sessionBookings } from "@usapt/db/schema";
 import { getProvider, transitionCandidate } from "@usapt/core";
+import { sendQuizInvite } from "./evaluation";
 
 type Tx = NodePgDatabase<typeof dbSchema>;
 
@@ -246,6 +247,11 @@ export async function recordTokenAttendance(
   const isFirst = inserted.length > 0;
   if (isFirst && candidate.status === "invited") {
     await transitionCandidate({ tx, client, candidateId: candidate.id, event: "session_joined" });
+    // Post-interview, the candidate gets their quiz/intake link (the other
+    // half of the auto-paired evaluation). Mock send is a fast DB insert, so
+    // this stays within the redirect's latency budget; a real provider send
+    // would move to the cron outbox (Phase 7).
+    await sendQuizInvite(tx, candidate.orgId, candidate.id);
   }
 
   return { meetingUrl: session.meetingUrl, alreadyAttended: !isFirst };

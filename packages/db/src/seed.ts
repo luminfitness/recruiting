@@ -2,6 +2,7 @@ import "./load-env";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import * as schema from "./schema";
+import { SCORECARD_V1, QUIZ_V1 } from "./eval-config";
 
 /**
  * Local-dev / demo seed: one organization (USA Personal Training) with two
@@ -68,7 +69,12 @@ async function main() {
 
   await db.insert(schema.thresholdSettings).values({ orgId: org.id });
 
-  console.log(`Seeded org ${org.slug} (${org.id}) with admin ${admin.email}`);
+  for (const roleType of ["trainer", "manager"] as const) {
+    await db.insert(schema.scorecardCriteriaVersions).values({ orgId: org.id, roleType, version: 1, schema: SCORECARD_V1[roleType], active: true });
+    await db.insert(schema.quizDefinitions).values({ orgId: org.id, roleType, version: 1, schema: QUIZ_V1[roleType], active: true });
+  }
+
+  console.log(`Seeded org ${org.slug} (${org.id}) with admin ${admin.email} + v1 criteria/quiz`);
   await pool.end();
 }
 

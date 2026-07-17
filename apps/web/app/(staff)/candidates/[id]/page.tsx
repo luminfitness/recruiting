@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { asc, eq } from "drizzle-orm";
-import { brands, candidates, candidateStatusHistory, markets } from "@usapt/db/schema";
+import { brands, candidates, candidateStatusHistory, evaluations, markets } from "@usapt/db/schema";
 import { StatusPill } from "@usapt/design-tokens";
 import { withUser } from "@/lib/db-context";
 
@@ -29,7 +29,7 @@ export default async function CandidateDetailPage({ params }: { params: Promise<
       .leftJoin(markets, eq(markets.id, candidates.marketId))
       .where(eq(candidates.id, id));
 
-    if (!candidate) return { candidate: null, timeline: [] };
+    if (!candidate) return { candidate: null, timeline: [], evaluation: null };
 
     const timeline = await tx
       .select()
@@ -37,7 +37,9 @@ export default async function CandidateDetailPage({ params }: { params: Promise<
       .where(eq(candidateStatusHistory.candidateId, id))
       .orderBy(asc(candidateStatusHistory.createdAt));
 
-    return { candidate, timeline };
+    const [evaluation] = await tx.select().from(evaluations).where(eq(evaluations.candidateId, id));
+
+    return { candidate, timeline, evaluation };
   });
 
   if (!data.candidate) {
@@ -112,6 +114,51 @@ export default async function CandidateDetailPage({ params }: { params: Promise<
           This is a re-application. <Link href={`/candidates/${c.duplicateOf}`} style={{ color: "inherit" }}>View prior record →</Link>
         </div>
       ) : null}
+
+      {(() => {
+        const ev = data.evaluation;
+        const grade = ev?.interviewGrade as { total?: number; max?: number } | null;
+        const canScore = ["attended", "evaluated"].includes(c.status);
+        return (
+          <div style={{ marginTop: 20, border: "1px solid var(--usapt-border)", padding: 16 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+              <h4 style={{ fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--usapt-text-muted)", margin: 0 }}>
+                Evaluation — auto-paired by token
+              </h4>
+              {canScore ? (
+                <Link href={`/score/${c.id}`} style={{ fontSize: 12.5, fontWeight: 600, color: "var(--usapt-brand-blue)", textDecoration: "none" }}>
+                  {ev?.scorecardSubmittedAt ? "Edit score" : "Score candidate"} →
+                </Link>
+              ) : null}
+            </div>
+            <div style={{ display: "flex", gap: 28 }}>
+              <div>
+                <div style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--usapt-text-faint)" }}>Interview grade</div>
+                <div style={{ fontFamily: "var(--font-archivo-black)", fontSize: 22, fontVariantNumeric: "tabular-nums" }}>
+                  {ev?.scorecardSubmittedAt && grade ? `${grade.total}/${grade.max}` : "—"}
+                </div>
+              </div>
+              <div>
+                <div style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--usapt-text-faint)" }}>Quiz score</div>
+                <div style={{ fontFamily: "var(--font-archivo-black)", fontSize: 22, fontVariantNumeric: "tabular-nums" }}>
+                  {ev?.quizSubmittedAt ? `${ev.quizScore}%` : "—"}
+                </div>
+              </div>
+              <div>
+                <div style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--usapt-text-faint)" }}>Both halves in?</div>
+                <div style={{ fontSize: 14, fontWeight: 600, marginTop: 4 }}>
+                  {ev?.scorecardSubmittedAt && ev?.quizSubmittedAt ? "Yes — evaluated" : "Awaiting one half"}
+                </div>
+              </div>
+            </div>
+            {ev?.quizWithoutAttendanceFlag ? (
+              <div style={{ marginTop: 10, fontSize: 12, color: "var(--status-action-text)" }}>
+                ⚠ Quiz submitted without attendance — flagged for human review (won&apos;t auto-advance).
+              </div>
+            ) : null}
+          </div>
+        );
+      })()}
 
       <div style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 40, marginTop: 28, alignItems: "start" }}>
         <section>

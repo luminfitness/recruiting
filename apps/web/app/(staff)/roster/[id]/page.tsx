@@ -79,7 +79,15 @@ export default async function RosterPage({ params }: { params: Promise<{ id: str
                   </div>
                 </div>
                 {r.joined ? (
-                  <StatusPill status="attended" />
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <StatusPill status={r.status} />
+                    <Link
+                      href={`/score/${r.candidateId}`}
+                      style={{ padding: "5px 12px", whiteSpace: "nowrap", fontFamily: "inherit", fontWeight: 600, fontSize: 12.5, border: "1px solid var(--usapt-border-strong)", background: "#fff", textDecoration: "none", color: "var(--usapt-ink)" }}
+                    >
+                      Score →
+                    </Link>
+                  </div>
                 ) : (
                   <form action={confirmPresent}>
                     <input type="hidden" name="bookingId" value={r.bookingId} />

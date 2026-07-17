@@ -4,6 +4,7 @@ import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import type * as dbSchema from "@usapt/db/schema";
 import { attendanceEvents, candidates, interviewSessions, sessionBookings, webhookEvents } from "@usapt/db/schema";
 import { transitionCandidate } from "@usapt/core";
+import { sendQuizInvite } from "./evaluation";
 
 type Tx = NodePgDatabase<typeof dbSchema>;
 
@@ -110,6 +111,7 @@ export async function confirmPresent(
     const [candidate] = await tx.select().from(candidates).where(eq(candidates.id, candidateId));
     if (candidate?.status === "invited") {
       await transitionCandidate({ tx, client, candidateId, event: "session_joined", actorUserId: hostUserId });
+      await sendQuizInvite(tx, candidate.orgId, candidateId);
     }
   }
 }
