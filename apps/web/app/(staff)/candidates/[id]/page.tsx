@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { asc, eq } from "drizzle-orm";
-import { brands, candidates, candidateStatusHistory, evaluations, markets } from "@usapt/db/schema";
+import { brands, candidates, candidateStatusHistory, evaluations, markets, offers } from "@usapt/db/schema";
 import { StatusPill } from "@usapt/design-tokens";
 import { withUser } from "@/lib/db-context";
+import { recordOfferResponseAction, resendOfferAction, retractOfferAction } from "./offer-actions";
 
 export default async function CandidateDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -29,7 +30,7 @@ export default async function CandidateDetailPage({ params }: { params: Promise<
       .leftJoin(markets, eq(markets.id, candidates.marketId))
       .where(eq(candidates.id, id));
 
-    if (!candidate) return { candidate: null, timeline: [], evaluation: null };
+    if (!candidate) return { candidate: null, timeline: [], evaluation: null, offer: null };
 
     const timeline = await tx
       .select()
@@ -38,8 +39,9 @@ export default async function CandidateDetailPage({ params }: { params: Promise<
       .orderBy(asc(candidateStatusHistory.createdAt));
 
     const [evaluation] = await tx.select().from(evaluations).where(eq(evaluations.candidateId, id));
+    const [offer] = await tx.select().from(offers).where(eq(offers.candidateId, id));
 
-    return { candidate, timeline, evaluation };
+    return { candidate, timeline, evaluation, offer };
   });
 
   if (!data.candidate) {
@@ -156,6 +158,51 @@ export default async function CandidateDetailPage({ params }: { params: Promise<
                 ⚠ Quiz submitted without attendance — flagged for human review (won&apos;t auto-advance).
               </div>
             ) : null}
+          </div>
+        );
+      })()}
+
+      {(() => {
+        const offer = data.offer;
+        const showManagerOffer = c.roleType === "manager" && ["awaiting_reply", "mia"].includes(c.status) && offer && !offer.response && !offer.retractedAt;
+        if (!showManagerOffer) return null;
+        return (
+          <div style={{ marginTop: 20, border: "2px solid var(--usapt-border-strong)", padding: 16 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+              <h4 style={{ fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--usapt-text-muted)", margin: 0 }}>
+                Manager offer — awaiting reply
+              </h4>
+              <span style={{ fontSize: 11.5, color: "var(--usapt-text-muted)" }}>
+                Sent {offer.sentAt ? new Date(offer.sentAt).toLocaleDateString() : ""}
+                {offer.resendCount ? ` · resent ${offer.resendCount}×` : ""}
+              </span>
+            </div>
+            <p style={{ fontSize: 12.5, color: "var(--usapt-text-muted)", margin: "0 0 12px" }}>
+              Offer + onboarding emails sent automatically. Record the candidate&apos;s reply when it comes in out-of-band.
+            </p>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              <form action={recordOfferResponseAction.bind(null, c.id, "accepted")}>
+                <button type="submit" style={{ padding: "8px 14px", fontFamily: "inherit", fontWeight: 700, fontSize: 13, color: "#fff", background: "var(--status-positive-marker)", border: 0, cursor: "pointer" }}>
+                  Mark accepted
+                </button>
+              </form>
+              <form action={recordOfferResponseAction.bind(null, c.id, "declined")}>
+                <button type="submit" style={{ padding: "8px 14px", fontFamily: "inherit", fontWeight: 700, fontSize: 13, color: "var(--usapt-ink)", background: "var(--usapt-neutral-200)", border: "1px solid var(--usapt-border)", cursor: "pointer" }}>
+                  Mark declined
+                </button>
+              </form>
+              <form action={resendOfferAction.bind(null, c.id)}>
+                <button type="submit" style={{ padding: "8px 14px", fontFamily: "inherit", fontWeight: 600, fontSize: 13, background: "#fff", border: "1px solid var(--usapt-border-strong)", cursor: "pointer" }}>
+                  Resend
+                </button>
+              </form>
+            </div>
+            <form action={retractOfferAction.bind(null, c.id)} style={{ display: "flex", gap: 6, marginTop: 10 }}>
+              <input name="reason" placeholder="Retraction reason (required)" style={{ flex: 1, maxWidth: 320, padding: "7px 10px", fontSize: 12.5, border: "1px solid var(--usapt-border)" }} />
+              <button type="submit" style={{ padding: "7px 12px", fontFamily: "inherit", fontWeight: 600, fontSize: 12.5, color: "var(--status-risk-text)", background: "var(--status-risk-fill)", border: 0, cursor: "pointer" }}>
+                Retract offer
+              </button>
+            </form>
           </div>
         );
       })()}

@@ -81,15 +81,18 @@ run("decisions & disposition", () => {
     return c.id;
   }
 
-  it("records an offer and advances evaluated -> offer with a decision row + audit", async () => {
-    const id = await makeEvaluated();
+  it("records an offer with a decision row + audit, and auto-routes a trainer to referred_local", async () => {
+    const id = await makeEvaluated(); // trainer
     await tx((t, client) => recordDecision(t, client, orgId, id, userId, "offer", "great fit"));
     const [c] = await db.select().from(schema.candidates).where(eq(schema.candidates.id, id));
-    expect(c.status).toBe("offer");
+    // The decision itself is `offer`; Phase 5 auto-routing then advances a
+    // trainer onward to referred_local in the same action.
+    expect(c.status).toBe("referred_local");
     const [d] = await db.select().from(schema.decisions).where(eq(schema.decisions.candidateId, id));
     expect(d.outcome).toBe("offer");
     const audits = await db.select().from(schema.auditLog).where(eq(schema.auditLog.resourceId, id));
     expect(audits.some((a) => a.action === "decision_recorded")).toBe(true);
+    expect(audits.some((a) => a.action === "referred_local")).toBe(true);
   });
 
   it("cannot record a decision on a candidate that isn't evaluated", async () => {

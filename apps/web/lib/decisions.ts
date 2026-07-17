@@ -15,6 +15,8 @@ import {
 } from "@usapt/db/schema";
 import type { QuizSchema, ScorecardSchema } from "@usapt/db";
 import { transitionCandidate } from "@usapt/core";
+import { sendManagerOffer } from "./offers";
+import { createLocalReferral } from "./referrals";
 
 type Tx = NodePgDatabase<typeof dbSchema>;
 
@@ -218,6 +220,18 @@ export async function recordDecision(
     reason: notes ?? undefined,
     payload: { outcome },
   });
+
+  // Automatic routing on offer (FR-1.7): managers get the offer + onboarding
+  // automation; trainers are referred to local management for the working
+  // interview. The candidate is now at `offer`; these advance it onward.
+  if (outcome === "offer") {
+    const [candidate] = await tx.select().from(candidates).where(eq(candidates.id, candidateId));
+    if (candidate?.roleType === "manager") {
+      await sendManagerOffer(tx, client, orgId, candidateId, actorUserId);
+    } else if (candidate?.roleType === "trainer") {
+      await createLocalReferral(tx, client, orgId, candidateId, actorUserId);
+    }
+  }
 }
 
 /** Bulk not-selected close-out (FR-1.7). Reason required per the state machine. */

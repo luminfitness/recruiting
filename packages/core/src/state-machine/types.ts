@@ -45,6 +45,7 @@ export type TransitionEvent =
   | "offer_sent"
   | "candidate_accepted"
   | "candidate_declined"
+  | "offer_retracted"
   | "mia_threshold_reached"
   | "referred_to_local"
   | "working_interview_scheduled"

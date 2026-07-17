@@ -42,6 +42,9 @@ export const TRANSITION_TABLE: TransitionRule[] = [
   { event: "offer_sent", from: ["offer"], to: "awaiting_reply" },
   { event: "candidate_accepted", from: ["awaiting_reply"], to: "confirmed_orientation" },
   { event: "candidate_declined", from: ["awaiting_reply"], to: "declined" },
+  // Company withdraws the offer before the candidate replies (FRD Section 6 edge
+  // case; reason required, candidate notified). Distinct from candidate_declined.
+  { event: "offer_retracted", from: ["offer", "awaiting_reply"], to: "not_selected", requiresReason: true },
   { event: "mia_threshold_reached", from: ["awaiting_reply", "referred_local"], to: "mia" },
 
   // Trainer path

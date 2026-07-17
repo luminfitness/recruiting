@@ -1,9 +1,12 @@
 import { withServiceTransaction } from "@usapt/db";
 import { markNoShows } from "./no-show";
+import { flagAgingReferrals, markOfferMia } from "./aging";
 
 export interface CronTickResult {
   ran: boolean;
   noShowsMarked?: number;
+  offersMia?: number;
+  referralsAged?: number;
 }
 
 /**
@@ -15,7 +18,7 @@ export interface CronTickResult {
  * this tick entirely (the next one will pick up the work).
  *
  * As later phases land, their jobs are added here: reminder sends (Phase 7),
- * offer-MIA aging (Phase 5), referral aging (Phase 5), backup-pool expiry.
+ * backup-pool expiry (Phase 9 refinement).
  */
 const TICK_LOCK_KEY = 4820571; // arbitrary constant identifying the cron-tick lock
 
@@ -27,6 +30,8 @@ export async function runCronTick(): Promise<CronTickResult> {
     }
 
     const noShowsMarked = await markNoShows(tx, client);
-    return { ran: true, noShowsMarked };
+    const offersMia = await markOfferMia(tx, client);
+    const referralsAged = await flagAgingReferrals(tx, client);
+    return { ran: true, noShowsMarked, offersMia, referralsAged };
   });
 }
