@@ -103,6 +103,12 @@ export default async function StaffLayout({ children }: { children: React.ReactN
                 Org admin
               </Link>
               <Link
+                href="/settings/integrations"
+                style={{ display: "block", padding: "9px 18px", fontSize: 13.5, fontWeight: 600, color: "inherit", textDecoration: "none" }}
+              >
+                Integrations
+              </Link>
+              <Link
                 href="/triage"
                 style={{ display: "block", padding: "9px 18px", fontSize: 13.5, fontWeight: 600, color: "inherit", textDecoration: "none" }}
               >

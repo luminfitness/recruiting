@@ -8,6 +8,9 @@ import type { MessagingProvider } from "./messaging";
 import { MockMessagingProvider } from "./messaging.mock";
 import type { MeetingProvider } from "./meeting";
 import { MockMeetingProvider } from "./meeting.mock";
+import { SendGridMessagingProvider, TwilioMessagingProvider } from "./messaging.real";
+import { ZoomMeetingProvider } from "./meeting.real";
+import { decryptCredentials, type EncryptedPayload } from "../crypto";
 
 export type IntegrationCategory =
   | "job_board_indeed"
@@ -53,22 +56,40 @@ export async function getProvider(
     .where(and(eq(integrationConfigs.orgId, orgId), eq(integrationConfigs.category, category)));
 
   const providerKey = config?.providerKey ?? "mock";
-  if (providerKey !== "mock") {
-    // Real Indeed/LinkedIn/Twilio/SendGrid/Zoom adapters land in Phase 11 — until
-    // then, a configured-but-unimplemented provider still falls back to Mock
-    // rather than throwing, so an org can pre-configure real credentials early.
-    console.warn(`Real provider "${providerKey}" for ${category} is not implemented yet — falling back to Mock`);
-  }
+  const creds = (): Record<string, unknown> => {
+    if (!config?.credentialsEncrypted) throw new Error(`No credentials configured for ${category}`);
+    return decryptCredentials(config.credentialsEncrypted as EncryptedPayload);
+  };
 
   switch (category) {
     case "job_board_indeed":
     case "job_board_linkedin":
+      // Indeed/LinkedIn job-posting APIs are partner-gated (OQ-3). Until an org
+      // has partner access, the semi-auto Mock IS the intended path — it returns
+      // requires_manual_action, which the posting flow already handles. When a
+      // real adapter is added it slots in here behind the same interface.
       return new MockJobBoardProvider();
-    case "messaging_email":
-    case "messaging_sms":
+    case "messaging_email": {
+      if (providerKey === "sendgrid") {
+        const c = creds();
+        return new SendGridMessagingProvider(String(c.apiKey));
+      }
       return new MockMessagingProvider(tx, orgId);
-    case "meeting":
+    }
+    case "messaging_sms": {
+      if (providerKey === "twilio") {
+        const c = creds();
+        return new TwilioMessagingProvider(String(c.accountSid), String(c.authToken), c.fromNumber ? String(c.fromNumber) : undefined);
+      }
+      return new MockMessagingProvider(tx, orgId);
+    }
+    case "meeting": {
+      if (providerKey === "zoom") {
+        const c = creds();
+        return new ZoomMeetingProvider(String(c.accountId), String(c.clientId), String(c.clientSecret));
+      }
       return new MockMeetingProvider(appBaseUrl);
+    }
     default: {
       const _exhaustive: never = category;
       throw new Error(`Unknown integration category: ${_exhaustive}`);
