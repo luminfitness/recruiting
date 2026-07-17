@@ -1,0 +1,2 @@
+DROP INDEX "candidates_org_email_active_idx";--> statement-breakpoint
+CREATE UNIQUE INDEX "candidates_org_email_active_idx" ON "candidates" USING btree ("org_id","email") WHERE "candidates"."status" NOT IN ('not_selected','local_declined','declined','never_started','quit_after_orientation','quit_during_class','graduated_inactive');

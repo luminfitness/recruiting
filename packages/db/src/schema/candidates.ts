@@ -1,4 +1,5 @@
 import { pgTable, text, timestamp, uniqueIndex, uuid, type AnyPgColumn } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 import { organizations, brands, markets } from "./tenancy";
 import { candidateSourceEnum, candidateStatusEnum, roleTypeEnum } from "./enums";
 import { jobPostings } from "./cadence";
@@ -38,7 +39,19 @@ export const candidates = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
-  (t) => [uniqueIndex("candidates_org_email_active_idx").on(t.orgId, t.email)],
+  (t) => [
+    // At most ONE active candidate per (org, email). PARTIAL — excludes the
+    // inactive/soft-terminal statuses (see INACTIVE_STATUSES in @usapt/core)
+    // so re-application can create a fresh record with the same email while
+    // the prior one sits in not_selected/declined/etc. This is the DB-level
+    // backstop for the app-level duplicate-merge logic in lib/candidates.ts;
+    // it must never forbid re-application.
+    uniqueIndex("candidates_org_email_active_idx")
+      .on(t.orgId, t.email)
+      .where(
+        sql`${t.status} NOT IN ('not_selected','local_declined','declined','never_started','quit_after_orientation','quit_during_class','graduated_inactive')`,
+      ),
+  ],
 );
 
 /**

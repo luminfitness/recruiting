@@ -85,6 +85,12 @@ export default async function StaffLayout({ children }: { children: React.ReactN
               >
                 Org admin
               </Link>
+              <Link
+                href="/outbox"
+                style={{ display: "block", padding: "9px 18px", fontSize: 13.5, fontWeight: 600, color: "inherit", textDecoration: "none" }}
+              >
+                Message outbox
+              </Link>
             </>
           ) : null}
         </nav>
