@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { href: "/roster", label: "Interview roster" },
   { href: "/postings", label: "Job postings" },
   { href: "/cadence", label: "Posting cadence" },
+  { href: "/cohorts", label: "Classes & cohorts" },
   { href: "/analytics", label: "Funnel analytics" },
 ];
 

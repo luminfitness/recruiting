@@ -1,0 +1,2 @@
+ALTER TABLE "class_cohorts" ADD COLUMN "org_id" uuid NOT NULL;--> statement-breakpoint
+ALTER TABLE "class_cohorts" ADD CONSTRAINT "class_cohorts_org_id_organizations_id_fk" FOREIGN KEY ("org_id") REFERENCES "public"."organizations"("id") ON DELETE cascade ON UPDATE no action;

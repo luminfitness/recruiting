@@ -1,9 +1,12 @@
 import { pgTable, primaryKey, timestamp, uuid } from "drizzle-orm/pg-core";
-import { brands, markets } from "./tenancy";
+import { organizations, brands, markets } from "./tenancy";
 import { candidates } from "./candidates";
 
 export const classCohorts = pgTable("class_cohorts", {
   id: uuid("id").primaryKey().defaultRandom(),
+  orgId: uuid("org_id")
+    .notNull()
+    .references(() => organizations.id, { onDelete: "cascade" }),
   marketId: uuid("market_id").references(() => markets.id, { onDelete: "set null" }),
   brandId: uuid("brand_id").references(() => brands.id, { onDelete: "set null" }),
   orientationAt: timestamp("orientation_at", { withTimezone: true }).notNull(),
