@@ -66,6 +66,35 @@ export function getServiceDb(): Db {
   return drizzle(getServicePool(), { schema });
 }
 
+/**
+ * Runs fn inside a transaction on the BYPASSRLS service connection, providing
+ * both the drizzle tx and the raw client (so transitionCandidate can set its
+ * app.allow_status_transition flag). Used by token-authorized anonymous
+ * candidate actions (the /join/[token] attendance redirect, candidate
+ * booking/quiz submits) where the unguessable token — not an org-scoped
+ * session — is the authorization, so there is no org context to RLS-scope to.
+ * The candidates status-guard TRIGGER still fires here (triggers are not
+ * affected by BYPASSRLS), so the "status only via transitionCandidate"
+ * invariant holds even on this path.
+ */
+export async function withServiceTransaction<T>(
+  fn: (tx: Db, client: PoolClient) => Promise<T>,
+): Promise<T> {
+  const client = await getServicePool().connect();
+  try {
+    await client.query("BEGIN");
+    const tx = drizzle(client, { schema });
+    const result = await fn(tx, client);
+    await client.query("COMMIT");
+    return result;
+  } catch (err) {
+    await client.query("ROLLBACK");
+    throw err;
+  } finally {
+    client.release();
+  }
+}
+
 export interface RequestContext {
   orgId: string;
   userId?: string;
