@@ -1,6 +1,7 @@
 import { withServiceTransaction } from "@usapt/db";
 import { markNoShows } from "./no-show";
 import { flagAgingReferrals, markOfferMia } from "./aging";
+import { sendDueReminders } from "./reminders";
 import { fireCadenceRules } from "../cadence";
 
 export interface CronTickResult {
@@ -9,6 +10,7 @@ export interface CronTickResult {
   offersMia?: number;
   referralsAged?: number;
   cadenceFired?: number;
+  remindersSent?: number;
 }
 
 /**
@@ -36,6 +38,7 @@ export async function runCronTick(): Promise<CronTickResult> {
     const offersMia = await markOfferMia(tx, client);
     const referralsAged = await flagAgingReferrals(tx, client);
     const cadenceFired = await fireCadenceRules(tx, client, now);
-    return { ran: true, noShowsMarked, offersMia, referralsAged, cadenceFired };
+    const remindersSent = await sendDueReminders(tx, client);
+    return { ran: true, noShowsMarked, offersMia, referralsAged, cadenceFired, remindersSent };
   });
 }

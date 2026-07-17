@@ -29,6 +29,20 @@
       "when": 1784303350923,
       "tag": "0003_evaluations_safe_security_invoker",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1784310436453,
+      "tag": "0004_sturdy_starjammers",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1784310450065,
+      "tag": "0005_reminders_rls",
+      "breakpoints": true
     }
   ]
 }

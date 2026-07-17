@@ -61,6 +61,10 @@ async function main() {
   await db.insert(schema.userRoles).values([
     { userId: admin.id, orgId: org.id, role: "admin" },
     { userId: admin.id, orgId: org.id, role: "recruiting_lead" },
+    // Also gives the demo account the field queues (local + TM) for a full tour.
+    { userId: admin.id, orgId: org.id, role: "trainer_coordinator" },
+    { userId: admin.id, orgId: org.id, role: "local_manager" },
+    { userId: admin.id, orgId: org.id, role: "territory_manager" },
   ]);
 
   for (const category of ["job_board_indeed", "job_board_linkedin", "messaging_email", "messaging_sms", "meeting"] as const) {

@@ -1,4 +1,5 @@
 import { integer, jsonb, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 import { organizations } from "./tenancy";
 import { users } from "./auth";
 
@@ -23,6 +24,8 @@ export const thresholdSettings = pgTable("threshold_settings", {
   offerNoReplyDays: integer("offer_no_reply_days").notNull().default(5),
   referralAgingDays: integer("referral_aging_days").notNull().default(7),
   backupExpiryDays: integer("backup_expiry_days").notNull().default(30),
+  /** Hours-before-session at which to send pre-interview reminders (FR-1.3). */
+  reminderOffsetsHours: jsonb("reminder_offsets_hours").notNull().default(sql`'[24, 1]'::jsonb`),
 });
 
 /** Gives the cron tick idempotency per named job per time window without a durable queue product. */

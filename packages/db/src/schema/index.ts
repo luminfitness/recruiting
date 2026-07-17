@@ -9,3 +9,4 @@ export * from "./interviews";
 export * from "./evaluation";
 export * from "./cohorts";
 export * from "./audit";
+export * from "./reminders";

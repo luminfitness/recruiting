@@ -14,6 +14,7 @@ const NAV_ITEMS = [
 export default async function StaffLayout({ children }: { children: React.ReactNode }) {
   const user = await requireUser();
   const showLocalQueue = hasRole(user, "local_manager");
+  const showTmQueue = hasRole(user, "territory_manager");
   const initials = user.name
     .split(" ")
     .map((p) => p[0])
@@ -73,6 +74,19 @@ export default async function StaffLayout({ children }: { children: React.ReactN
                 style={{ display: "block", padding: "9px 18px", fontSize: 13.5, fontWeight: 600, color: "inherit", textDecoration: "none" }}
               >
                 Local manager queue
+              </Link>
+            </>
+          ) : null}
+          {showTmQueue ? (
+            <>
+              <div style={{ padding: "16px 18px 6px", fontSize: 9, letterSpacing: "0.16em", textTransform: "uppercase", color: "#8fa8ce" }}>
+                Field · Mobile
+              </div>
+              <Link
+                href="/tm"
+                style={{ display: "block", padding: "9px 18px", fontSize: 13.5, fontWeight: 600, color: "inherit", textDecoration: "none" }}
+              >
+                No-show outreach
               </Link>
             </>
           ) : null}
