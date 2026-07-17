@@ -6,6 +6,8 @@ const NAV_ITEMS = [
   { href: "/pipeline", label: "Pipeline · tracker" },
   { href: "/decisions", label: "Decision bundle" },
   { href: "/roster", label: "Interview roster" },
+  { href: "/postings", label: "Job postings" },
+  { href: "/cadence", label: "Posting cadence" },
   { href: "/analytics", label: "Funnel analytics" },
 ];
 
@@ -84,6 +86,12 @@ export default async function StaffLayout({ children }: { children: React.ReactN
                 style={{ display: "block", padding: "9px 18px", fontSize: 13.5, fontWeight: 600, color: "inherit", textDecoration: "none" }}
               >
                 Org admin
+              </Link>
+              <Link
+                href="/triage"
+                style={{ display: "block", padding: "9px 18px", fontSize: 13.5, fontWeight: 600, color: "inherit", textDecoration: "none" }}
+              >
+                Application triage
               </Link>
               <Link
                 href="/outbox"
