@@ -155,4 +155,26 @@ run("RLS isolation", () => {
       ),
     ).rejects.toThrow(/transitionCandidate/);
   });
+
+  it("evaluations_safe enforces RLS (security_invoker) and never exposes the felony column", async () => {
+    // Seed an evaluation with a disclosure on Org B's candidate (as service).
+    await service
+      .insert(schema.evaluations)
+      .values({ candidateId: ids.candB1, felonyDisclosure: { hasDisclosure: true, detail: "secret" } });
+
+    // Org A context must NOT see Org B's evaluation through the view.
+    const rows = await asContext({ orgId: ids.orgA, marketIds: "*" }, (c) =>
+      c.query("SELECT candidate_id FROM evaluations_safe WHERE candidate_id = $1", [ids.candB1]).then((r) => r.rows),
+    );
+    expect(rows).toHaveLength(0);
+
+    // The view must expose has_disclosure (boolean) but NOT felony_disclosure.
+    const cols = await asContext({ orgId: ids.orgA, marketIds: "*" }, (c) =>
+      c
+        .query("SELECT column_name FROM information_schema.columns WHERE table_name = 'evaluations_safe'")
+        .then((r) => r.rows.map((x) => x.column_name)),
+    );
+    expect(cols).toContain("has_disclosure");
+    expect(cols).not.toContain("felony_disclosure");
+  });
 });

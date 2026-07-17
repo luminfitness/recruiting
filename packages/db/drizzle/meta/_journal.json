@@ -22,6 +22,13 @@
       "when": 1784292687465,
       "tag": "0002_friendly_whiplash",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1784303350923,
+      "tag": "0003_evaluations_safe_security_invoker",
+      "breakpoints": true
     }
   ]
 }
