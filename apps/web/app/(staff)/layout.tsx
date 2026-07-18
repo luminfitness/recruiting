@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { requireUser, hasRole } from "@/lib/auth";
+import { isDemoMode } from "@/lib/demo";
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Lead dashboard" },
@@ -125,6 +126,14 @@ export default async function StaffLayout({ children }: { children: React.ReactN
                 style={{ display: "block", padding: "9px 18px", fontSize: 13.5, fontWeight: 600, color: "inherit", textDecoration: "none" }}
               >
                 Message outbox
+              </Link>
+            </>
+          ) : null}
+          {isDemoMode() ? (
+            <>
+              <div style={{ padding: "16px 18px 6px", fontSize: 9, letterSpacing: "0.16em", textTransform: "uppercase", color: "#8fa8ce" }}>Demo</div>
+              <Link href="/debug" style={{ display: "block", padding: "9px 18px", fontSize: 13.5, fontWeight: 700, color: "#ffd7d7", textDecoration: "none" }}>
+                ⚡ Switch user
               </Link>
             </>
           ) : null}

@@ -48,24 +48,34 @@ async function main() {
     })
     .returning();
 
-  await db.insert(schema.markets).values([
-    { brandId: usaptBrand.id, name: "Denver, CO", timezone: "America/Denver" },
-    { brandId: crunchBrand.id, name: "Dallas, TX", timezone: "America/Chicago" },
-  ]);
-
-  const [admin] = await db
-    .insert(schema.users)
-    .values({ orgId: org.id, name: "Marc Calderon", email: "marc@usapt.example" })
+  const [denver, dallas] = await db
+    .insert(schema.markets)
+    .values([
+      { brandId: usaptBrand.id, name: "Denver, CO", timezone: "America/Denver" },
+      { brandId: crunchBrand.id, name: "Dallas, TX", timezone: "America/Chicago" },
+    ])
     .returning();
 
+  // One persona per role so the demo user-switcher shows each scoped experience.
+  // All emails route to andrew@mixed.fitness via plus-addressing.
+  const [marc] = await db.insert(schema.users).values({ orgId: org.id, name: "Marc Calderon", email: "andrew@mixed.fitness" }).returning();
   await db.insert(schema.userRoles).values([
-    { userId: admin.id, orgId: org.id, role: "admin" },
-    { userId: admin.id, orgId: org.id, role: "recruiting_lead" },
-    // Also gives the demo account the field queues (local + TM) for a full tour.
-    { userId: admin.id, orgId: org.id, role: "trainer_coordinator" },
-    { userId: admin.id, orgId: org.id, role: "local_manager" },
-    { userId: admin.id, orgId: org.id, role: "territory_manager" },
+    { userId: marc.id, orgId: org.id, role: "admin" },
+    { userId: marc.id, orgId: org.id, role: "recruiting_lead" },
   ]);
+
+  const [maddy] = await db.insert(schema.users).values({ orgId: org.id, name: "Maddy Guerra", email: "andrew+coordinator@mixed.fitness" }).returning();
+  await db.insert(schema.userRoles).values({ userId: maddy.id, orgId: org.id, role: "trainer_coordinator" });
+
+  // Territory manager scoped to Denver (managers apply to the USAPT brand there).
+  const [tanya] = await db.insert(schema.users).values({ orgId: org.id, name: "Tanya Ruiz", email: "andrew+tm@mixed.fitness" }).returning();
+  const [tanyaRole] = await db.insert(schema.userRoles).values({ userId: tanya.id, orgId: org.id, role: "territory_manager" }).returning();
+  await db.insert(schema.userMarketScopes).values({ userRoleId: tanyaRole.id, marketId: denver.id });
+
+  // Local manager scoped to Dallas (where trainers get referred for working interviews).
+  const [diego] = await db.insert(schema.users).values({ orgId: org.id, name: "Diego Santos", email: "andrew+local@mixed.fitness" }).returning();
+  const [diegoRole] = await db.insert(schema.userRoles).values({ userId: diego.id, orgId: org.id, role: "local_manager" }).returning();
+  await db.insert(schema.userMarketScopes).values({ userRoleId: diegoRole.id, marketId: dallas.id });
 
   for (const category of ["job_board_indeed", "job_board_linkedin", "messaging_email", "messaging_sms", "meeting"] as const) {
     await db.insert(schema.integrationConfigs).values({ orgId: org.id, category, providerKey: "mock" });

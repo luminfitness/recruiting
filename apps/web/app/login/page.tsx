@@ -66,6 +66,11 @@ export default function LoginPage() {
         {state.message ? (
           <p style={{ marginTop: 16, fontSize: 12.5, color: "var(--usapt-text-muted)" }}>{state.message}</p>
         ) : null}
+        <div style={{ marginTop: 16, paddingTop: 14, borderTop: "1px solid var(--usapt-border)" }}>
+          <a href="/debug" style={{ fontSize: 12.5, fontWeight: 600, color: "var(--usapt-brand-blue)", textDecoration: "none" }}>
+            ⚡ Demo — switch user without a password →
+          </a>
+        </div>
       </div>
     </div>
   );
