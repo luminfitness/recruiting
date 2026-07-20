@@ -80,8 +80,11 @@ async function start() {
   try {
     await pg.start();
   } catch (err) {
-    // Already running is fine — we just proceed to ensure roles/db exist.
-    console.log(`(server already running or start skipped: ${(err as Error).message})`);
+    // Already running (or a start that rejected with a non-Error value) is fine —
+    // we just proceed to ensure roles/db exist. Guard against a null/undefined
+    // rejection so the log line itself can't crash the script.
+    const msg = err instanceof Error ? err.message : err != null ? String(err) : "already running";
+    console.log(`(server already running or start skipped: ${msg})`);
   }
 
   // Ensure the app database exists (createDatabase throws if it already does).
@@ -130,7 +133,8 @@ async function stop() {
     await pg.stop();
     console.log("Stopped.");
   } catch (err) {
-    console.log(`Nothing to stop (${(err as Error).message}).`);
+    const msg = err instanceof Error ? err.message : String(err ?? "not running");
+    console.log(`Nothing to stop (${msg}).`);
   }
 }
 
