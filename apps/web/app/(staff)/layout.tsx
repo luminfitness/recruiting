@@ -14,7 +14,7 @@ export default async function StaffLayout({ children }: { children: React.ReactN
   // screens land across build-steps. Bridge hrefs (→ existing routes) get
   // repointed to the merged screens in later steps.
   const funnelItems = [
-    { label: "Sourcing", href: "/postings" }, // → /sourcing (step 3)
+    { label: "Sourcing", href: "/sourcing" },
     { label: "Interviews", href: "/interviews" },
     { label: "Decisions", href: "/decisions" },
     { label: "Classes", href: "/classes" },
@@ -35,7 +35,6 @@ export default async function StaffLayout({ children }: { children: React.ReactN
           { label: "Organization", href: "/admin" },
           { label: "Integrations", href: "/settings/integrations" },
           { label: "Cadence rules", href: "/cadence" },
-          { label: "Application intake", href: "/triage" },
           { label: "Activity log", href: "/audit" },
           ...(isDemoMode() ? [{ label: "Message outbox", href: "/outbox" }] : []),
         ],

@@ -83,7 +83,7 @@ export default async function TodayPage() {
       title: `${ACTION_LABEL[r.action] ?? r.action} — ${r.roleType}`,
       detail: `Today's ${DAYS[dow]} ritual · ${r.channel} · ${r.time.slice(0, 5)}`,
       cta: "Do it",
-      href: "/postings",
+      href: "/sourcing",
     });
   }
   if (queue.length) {
@@ -103,7 +103,7 @@ export default async function TodayPage() {
       title: `${pendingPostings} posting${plural(pendingPostings)} to publish`,
       detail: "Cadence prepared them for one-click publish",
       cta: "Publish",
-      href: "/postings",
+      href: "/sourcing",
     });
   }
   if (canManagerOffers && offersAwaiting) {
@@ -196,7 +196,7 @@ export default async function TodayPage() {
         <section>
           <div style={sectionHeader}>
             <h3 style={{ fontSize: 17, margin: 0 }}>This week&rsquo;s ritual</h3>
-            <Link href="/postings" style={{ fontSize: 13, fontWeight: 600, color: "var(--usapt-brand-blue)", textDecoration: "none" }}>Sourcing →</Link>
+            <Link href="/sourcing" style={{ fontSize: 13, fontWeight: 600, color: "var(--usapt-brand-blue)", textDecoration: "none" }}>Sourcing →</Link>
           </div>
           {rules.map((c) => {
             const isToday = c.dayOfWeek === dow;
