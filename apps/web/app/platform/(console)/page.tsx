@@ -4,8 +4,8 @@ import { createOrgAction, createSupportGrantAction } from "./actions";
 export default async function PlatformDashboard() {
   const [orgs, grants] = await Promise.all([listOrgHealth(), listSupportGrants()]);
 
-  const inputStyle: React.CSSProperties = { padding: "8px 10px", fontSize: 13, border: "1px solid var(--usapt-border)", background: "#fff" };
-  const th: React.CSSProperties = { textAlign: "left", fontSize: 10, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--usapt-text-muted)", padding: "8px 12px", borderBottom: "2px solid var(--usapt-border-strong)" };
+  const inputStyle: React.CSSProperties = { padding: "8px 10px", fontSize: 13, border: "1px solid var(--usapt-border)", background: "var(--usapt-surface-raised)" };
+  const th: React.CSSProperties = { textAlign: "left", fontSize: 10, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--usapt-text-muted)", padding: "8px 12px", borderBottom: "1px solid var(--usapt-border)" };
   const td: React.CSSProperties = { padding: 12, borderBottom: "1px solid var(--usapt-border)", fontSize: 13.5 };
   const btn: React.CSSProperties = { padding: "8px 14px", fontFamily: "inherit", fontWeight: 700, fontSize: 13, color: "#fff", background: "var(--usapt-ink)", border: 0, cursor: "pointer" };
 
@@ -38,7 +38,7 @@ export default async function PlatformDashboard() {
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32, alignItems: "start" }}>
         <section>
-          <h3 style={{ fontSize: 15, margin: "0 0 10px", borderBottom: "2px solid var(--usapt-border-strong)", paddingBottom: 8 }}>Provision an organization</h3>
+          <h3 style={{ fontSize: 15, margin: "0 0 10px", borderBottom: "1px solid var(--usapt-border)", paddingBottom: 8 }}>Provision an organization</h3>
           <form action={createOrgAction} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             <input name="name" placeholder="Organization name" required style={inputStyle} />
             <input name="slug" placeholder="slug (used in apply+slug@…)" required style={inputStyle} />
@@ -49,7 +49,7 @@ export default async function PlatformDashboard() {
         </section>
 
         <section>
-          <h3 style={{ fontSize: 15, margin: "0 0 10px", borderBottom: "2px solid var(--usapt-border-strong)", paddingBottom: 8 }}>Support access (break-glass)</h3>
+          <h3 style={{ fontSize: 15, margin: "0 0 10px", borderBottom: "1px solid var(--usapt-border)", paddingBottom: 8 }}>Support access (break-glass)</h3>
           <form action={createSupportGrantAction} style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 14 }}>
             <select name="orgId" required style={inputStyle}>
               <option value="">Organization…</option>

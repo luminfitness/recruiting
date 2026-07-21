@@ -1,5 +1,7 @@
+import { redirect } from "next/navigation";
 import { desc, eq } from "drizzle-orm";
 import { brands, cadenceRules, copyTemplates } from "@usapt/db/schema";
+import { requireUser, hasRole } from "@/lib/auth";
 import { withUser } from "@/lib/db-context";
 import { createRuleAction, createTemplateAction, seedDefaultCadenceAction, toggleRuleAction } from "./actions";
 
@@ -7,6 +9,11 @@ const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const ACTION_LABEL: Record<string, string> = { post: "Post ads", switch_mode: "Switch mode", end: "End ads", remind: "Send reminders" };
 
 export default async function CadencePage() {
+  // Org configuration — admin-only. (The settings layout no longer redirects,
+  // so non-admins reaching this route directly land back on Appearance.)
+  const authed = await requireUser();
+  if (!hasRole(authed, "admin")) redirect("/settings/appearance");
+
   const { rules, templates, brandRows } = await withUser(async (tx, _client, user) => {
     const rules = await tx.select().from(cadenceRules).where(eq(cadenceRules.orgId, user.orgId)).orderBy(cadenceRules.dayOfWeek, cadenceRules.time);
     const templates = await tx.select().from(copyTemplates).where(eq(copyTemplates.orgId, user.orgId)).orderBy(desc(copyTemplates.version));
@@ -14,8 +21,8 @@ export default async function CadencePage() {
     return { rules, templates, brandRows };
   });
 
-  const inputStyle: React.CSSProperties = { padding: "8px 10px", fontSize: 13, border: "1px solid var(--usapt-border)", background: "#fff" };
-  const th: React.CSSProperties = { textAlign: "left", fontSize: 10, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--usapt-text-muted)", padding: "8px 12px", borderBottom: "2px solid var(--usapt-border-strong)" };
+  const inputStyle: React.CSSProperties = { padding: "8px 10px", fontSize: 13, border: "1px solid var(--usapt-border)", background: "var(--usapt-surface-raised)" };
+  const th: React.CSSProperties = { textAlign: "left", fontSize: 10, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--usapt-text-muted)", padding: "8px 12px", borderBottom: "1px solid var(--usapt-border)" };
   const td: React.CSSProperties = { padding: 12, borderBottom: "1px solid var(--usapt-border)", fontSize: 13.5 };
   const brandName = (id: string | null) => brandRows.find((b) => b.id === id)?.name ?? "All brands";
 
@@ -69,7 +76,7 @@ export default async function CadencePage() {
         </tbody>
       </table>
 
-      <h3 style={{ fontSize: 15, margin: "0 0 10px", borderBottom: "2px solid var(--usapt-border-strong)", paddingBottom: 8 }}>Add a rule</h3>
+      <h3 style={{ fontSize: 15, margin: "0 0 10px", borderBottom: "1px solid var(--usapt-border)", paddingBottom: 8 }}>Add a rule</h3>
       <form action={createRuleAction} style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center", marginBottom: 32 }}>
         <select name="dayOfWeek" style={inputStyle} defaultValue="0">
           {DAYS.map((d, i) => (
@@ -106,7 +113,7 @@ export default async function CadencePage() {
         </button>
       </form>
 
-      <h3 style={{ fontSize: 15, margin: "0 0 10px", borderBottom: "2px solid var(--usapt-border-strong)", paddingBottom: 8 }}>
+      <h3 style={{ fontSize: 15, margin: "0 0 10px", borderBottom: "1px solid var(--usapt-border)", paddingBottom: 8 }}>
         Copy templates {templates.length ? `(${templates.length})` : ""}
       </h3>
       {templates.length ? (

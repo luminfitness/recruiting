@@ -31,7 +31,7 @@ export default async function DecisionBundlePage({ params }: { params: Promise<{
         → Bundle
       </div>
 
-      <div style={{ display: "flex", alignItems: "flex-start", gap: 16, borderBottom: "2px solid var(--usapt-border-strong)", paddingBottom: 16 }}>
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 16, borderBottom: "1px solid var(--usapt-border)", paddingBottom: 16 }}>
         <div style={{ flex: 1 }}>
           <h1 style={{ fontSize: 28, margin: 0 }}>{bundle.candidate.name}</h1>
           <div style={{ display: "flex", gap: 8, marginTop: 6, flexWrap: "wrap", fontSize: 12, color: "var(--usapt-text-muted)" }}>
@@ -121,7 +121,7 @@ export default async function DecisionBundlePage({ params }: { params: Promise<{
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-          <section style={{ border: "2px solid var(--usapt-border-strong)", padding: 16 }}>
+          <section style={{ border: "1px solid var(--usapt-border)", padding: 16 }}>
             <h4 style={{ ...sectionLabel, marginBottom: 14 }}>Disposition</h4>
             {!canDecide ? (
               <p style={{ fontSize: 12.5, color: "var(--usapt-text-muted)", margin: "0 0 10px" }}>

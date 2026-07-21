@@ -3,7 +3,28 @@
 body {
   background: var(--usapt-bg);
   color: var(--usapt-ink);
-  font-family: var(--font-archivo), system-ui, sans-serif;
+  font-family: var(--usapt-font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Flat Look: round form controls globally (Modernist inline styles set no
+   radius, so these apply without fighting inline rules). Buttons opt into the
+   pill/rounded look; inputs/selects use the control radius. */
+button {
+  border-radius: var(--usapt-radius-sm);
+}
+input,
+select,
+textarea {
+  border-radius: var(--usapt-radius-sm);
+  font-family: var(--usapt-font-sans);
+}
+
+code,
+kbd,
+samp,
+pre {
+  font-family: var(--usapt-font-mono);
 }
 
 .usapt-scroll::-webkit-scrollbar {
@@ -12,6 +33,7 @@ body {
 }
 .usapt-scroll::-webkit-scrollbar-thumb {
   background: var(--usapt-neutral-400);
+  border-radius: var(--usapt-radius-pill);
 }
 .usapt-scroll::-webkit-scrollbar-track {
   background: var(--usapt-neutral-200);

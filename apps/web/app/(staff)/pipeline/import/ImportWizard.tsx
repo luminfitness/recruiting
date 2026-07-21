@@ -56,7 +56,7 @@ export function ImportWizard() {
   }
 
   const cleanMapping = Object.fromEntries(Object.entries(mapping).filter(([, v]) => v !== "").map(([k, v]) => [k, Number(v)]));
-  const inputStyle: React.CSSProperties = { padding: "6px 8px", fontSize: 12, border: "1px solid var(--usapt-border)", background: "#fff" };
+  const inputStyle: React.CSSProperties = { padding: "6px 8px", fontSize: 12, border: "1px solid var(--usapt-border)", background: "var(--usapt-surface-raised)" };
 
   if (state.status === "done" && state.result) {
     return (

@@ -12,14 +12,14 @@ export default async function LocalQueuePage() {
     <div style={{ background: "var(--usapt-bg)", minHeight: "100%" }}>
       <div style={{ background: "var(--usapt-brand-blue)", color: "#fff", padding: "16px 18px" }}>
           <span style={{ fontSize: 13, fontWeight: 700 }}>Trainer queue</span>
-          <div style={{ fontSize: 11, color: "#9db4d6", marginTop: 8 }}>{pending} awaiting your outcome · your market only</div>
+          <div style={{ fontSize: 11, color: "var(--usapt-text-faint)", marginTop: 8 }}>{pending} awaiting your outcome · your market only</div>
         </div>
 
         <div style={{ padding: 14, display: "flex", flexDirection: "column", gap: 12 }}>
           {queue.map((c) => {
             const schedule = scheduleWorkingInterviewAction.bind(null, c.referralId);
             return (
-              <div key={c.referralId} style={{ background: "#fff", border: "1px solid var(--usapt-border)", padding: 14 }}>
+              <div key={c.referralId} style={{ background: "var(--usapt-surface-raised)", border: "1px solid var(--usapt-border)", padding: 14 }}>
                 <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8 }}>
                   <div>
                     <div style={{ fontSize: 16, fontWeight: 700 }}>{c.name}</div>
@@ -66,7 +66,7 @@ export default async function LocalQueuePage() {
             );
           })}
           {queue.length === 0 ? (
-            <div style={{ background: "#fff", border: "1px solid var(--usapt-border)", padding: 16, fontSize: 13, color: "var(--usapt-text-muted)" }}>
+            <div style={{ background: "var(--usapt-surface-raised)", border: "1px solid var(--usapt-border)", padding: 16, fontSize: 13, color: "var(--usapt-text-muted)" }}>
               No trainers referred to your market yet. When central offers a trainer, they appear here for the working
               interview.
             </div>

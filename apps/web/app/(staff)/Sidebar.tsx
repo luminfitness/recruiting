@@ -8,11 +8,12 @@ export type NavItem = { label: string; href: string; step?: number };
 export type NavGroup = { header?: string; items: NavItem[] };
 
 const groupHeader: React.CSSProperties = {
-  padding: "14px 18px 6px",
-  fontSize: 9,
-  letterSpacing: "0.16em",
+  padding: "16px 14px 6px",
+  fontSize: 10.5,
+  fontWeight: 800,
+  letterSpacing: "0.09em",
   textTransform: "uppercase",
-  color: "#8fa8ce",
+  color: "var(--usapt-text-faint)",
 };
 
 function itemStyle(active: boolean): React.CSSProperties {
@@ -20,12 +21,13 @@ function itemStyle(active: boolean): React.CSSProperties {
     display: "flex",
     alignItems: "center",
     gap: 10,
-    padding: "9px 18px",
+    margin: "1px 8px",
+    padding: "8px 10px",
     fontSize: 13.5,
     fontWeight: 600,
-    borderLeft: `3px solid ${active ? "var(--usapt-brand-red)" : "transparent"}`,
-    background: active ? "#0a3271" : "transparent",
-    color: active ? "#fff" : "inherit",
+    borderRadius: "var(--usapt-radius)",
+    background: active ? "var(--usapt-brand-soft)" : "transparent",
+    color: active ? "var(--usapt-brand-ink)" : "var(--usapt-text-muted)",
     textDecoration: "none",
   };
 }
@@ -52,28 +54,45 @@ export function Sidebar({
   return (
     <aside
       style={{
-        width: 236,
+        width: 244,
         flex: "none",
         display: "flex",
         flexDirection: "column",
-        background: "var(--usapt-brand-blue)",
-        color: "var(--usapt-bg)",
-        borderRight: "2px solid #0a3271",
+        background: "var(--usapt-surface-raised)",
+        color: "var(--usapt-ink)",
+        borderRight: "1px solid var(--usapt-border)",
       }}
     >
-      <div style={{ background: "#fff", padding: "14px 18px 12px" }}>
-        <span style={{ fontFamily: "var(--font-archivo-black)", fontSize: 15, color: "var(--usapt-brand-blue)" }}>USA PT</span>
+      <div style={{ display: "flex", alignItems: "center", gap: 9, padding: "18px 18px 14px" }}>
+        <span
+          style={{
+            width: 26,
+            height: 26,
+            flex: "none",
+            borderRadius: 8,
+            background: "var(--usapt-brand-blue)",
+            color: "#fff",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: 13,
+            fontWeight: 800,
+          }}
+        >
+          U
+        </span>
+        <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.1 }}>
+          <span style={{ fontSize: 14, fontWeight: 800, letterSpacing: "-0.01em" }}>USA PT</span>
+          <span style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--usapt-text-faint)" }}>
+            Recruiting
+          </span>
+        </div>
       </div>
-      <div style={{ height: 3, background: "var(--usapt-brand-red)" }} />
-      <div style={{ padding: "12px 18px 10px", fontSize: 9, letterSpacing: "0.18em", textTransform: "uppercase", color: "#8fa8ce" }}>
-        Recruiting Console
-      </div>
-      <div style={{ height: 2, background: "#0a3271" }} />
 
-      <nav style={{ flex: 1, overflowY: "auto", padding: "8px 0" }}>
+      <nav style={{ flex: 1, overflowY: "auto", padding: "4px 0 8px" }}>
         {groups.map((group, gi) => (
           <div key={group.header ?? `g${gi}`}>
-            {group.header ? <div style={groupHeader}>{group.header}</div> : null}
+            {group.header ? <div style={groupHeader}>{group.header}</div> : <div style={{ height: 8 }} />}
             {group.items.map((item) => {
               const active = isActive(item.href);
               return (
@@ -82,16 +101,17 @@ export function Sidebar({
                     <span
                       style={{
                         flex: "none",
-                        width: 18,
-                        height: 18,
+                        width: 19,
+                        height: 19,
+                        borderRadius: 999,
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
                         fontSize: 10,
                         fontWeight: 800,
                         fontVariantNumeric: "tabular-nums",
-                        color: active ? "#fff" : "#8fa8ce",
-                        border: `1.5px solid ${active ? "var(--usapt-brand-red)" : "#3a5da0"}`,
+                        color: active ? "#fff" : "var(--usapt-text-muted)",
+                        background: active ? "var(--usapt-brand-blue)" : "var(--usapt-surface)",
                       }}
                     >
                       {item.step}
@@ -112,24 +132,23 @@ export function Sidebar({
               aria-expanded={settingsOpen}
               style={{
                 ...itemStyle(settingsActive && !settingsOpen),
-                width: "100%",
+                width: "calc(100% - 16px)",
                 justifyContent: "space-between",
                 cursor: "pointer",
                 fontFamily: "inherit",
                 border: 0,
-                borderLeft: `3px solid ${settingsActive && !settingsOpen ? "var(--usapt-brand-red)" : "transparent"}`,
               }}
             >
               <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span aria-hidden>⚙</span> Settings
+                <span aria-hidden style={{ fontSize: 14 }}>⚙</span> Settings
               </span>
-              <span aria-hidden style={{ fontSize: 10, color: "#8fa8ce" }}>{settingsOpen ? "▾" : "▸"}</span>
+              <span aria-hidden style={{ fontSize: 10, color: "var(--usapt-text-faint)" }}>{settingsOpen ? "▾" : "▸"}</span>
             </button>
             {settingsOpen
               ? settingsGroup.items.map((item) => {
                   const active = isActive(item.href);
                   return (
-                    <Link key={item.href} href={item.href} style={{ ...itemStyle(active), padding: "8px 18px 8px 40px", fontSize: 12.5 }}>
+                    <Link key={item.href} href={item.href} style={{ ...itemStyle(active), padding: "7px 10px 7px 34px", fontSize: 12.5 }}>
                       {item.label}
                     </Link>
                   );
@@ -140,42 +159,42 @@ export function Sidebar({
 
         {showSwitcher ? (
           <>
-            <div style={{ ...groupHeader, marginTop: 10 }}>Demo</div>
-            <Link href="/debug" style={{ display: "block", padding: "9px 18px", fontSize: 13.5, fontWeight: 700, color: "#ffd7d7", textDecoration: "none" }}>
+            <div style={groupHeader}>Demo</div>
+            <Link href="/debug" style={{ ...itemStyle(false), color: "var(--usapt-brand-ink)", fontWeight: 700 }}>
               ⚡ Switch user
             </Link>
           </>
         ) : null}
       </nav>
 
-      <div style={{ height: 2, background: "#0a3271" }} />
-      <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "14px 18px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 14px", borderTop: "1px solid var(--usapt-border)" }}>
         <div
           style={{
-            width: 30,
-            height: 30,
+            width: 32,
+            height: 32,
             flex: "none",
-            background: "#0a3271",
-            color: "#fff",
+            borderRadius: 999,
+            background: "var(--usapt-brand-soft)",
+            color: "var(--usapt-brand-ink)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             fontSize: 11,
-            fontWeight: 700,
+            fontWeight: 800,
           }}
         >
           {identity.initials}
         </div>
-        <div style={{ lineHeight: 1.15, flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 12.5, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+        <div style={{ lineHeight: 1.2, flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 12.5, fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
             {identity.name}
           </div>
-          <div style={{ fontSize: 10, color: "#8fa8ce" }}>{identity.roleLabel}</div>
+          <div style={{ fontSize: 10.5, color: "var(--usapt-text-faint)" }}>{identity.roleLabel}</div>
         </div>
         <form action="/auth/logout" method="post">
           <button
             type="submit"
-            style={{ background: "none", border: 0, color: "#8fa8ce", fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}
+            style={{ background: "none", border: 0, color: "var(--usapt-text-faint)", fontSize: 11, cursor: "pointer", fontFamily: "inherit", padding: 0 }}
           >
             Sign out
           </button>

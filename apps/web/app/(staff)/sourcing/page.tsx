@@ -64,10 +64,10 @@ export default async function SourcingPage({ searchParams }: { searchParams: Pro
   });
 
   const pending = postings.filter((p) => p.status === "pending_manual_action");
-  const inputStyle: React.CSSProperties = { padding: "8px 10px", fontSize: 13, border: "1px solid var(--usapt-border)", background: "#fff" };
-  const th: React.CSSProperties = { textAlign: "left", fontSize: 10, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--usapt-text-muted)", padding: "8px 12px", borderBottom: "2px solid var(--usapt-border-strong)" };
+  const inputStyle: React.CSSProperties = { padding: "8px 10px", fontSize: 13, border: "1px solid var(--usapt-border)", background: "var(--usapt-surface-raised)" };
+  const th: React.CSSProperties = { textAlign: "left", fontSize: 10, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--usapt-text-muted)", padding: "8px 12px", borderBottom: "1px solid var(--usapt-border)" };
   const td: React.CSSProperties = { padding: 12, borderBottom: "1px solid var(--usapt-border)", fontSize: 13, verticalAlign: "top" };
-  const h3: React.CSSProperties = { fontSize: 15, margin: "0 0 10px", borderBottom: "2px solid var(--usapt-border-strong)", paddingBottom: 8 };
+  const h3: React.CSSProperties = { fontSize: 15, margin: "0 0 10px", borderBottom: "1px solid var(--usapt-border)", paddingBottom: 8 };
 
   const counts: Record<Tab, number> = { publish: pending.length, week: rules.filter((r) => r.dayOfWeek === dow).length, intake: triage.length };
 
@@ -83,7 +83,7 @@ export default async function SourcingPage({ searchParams }: { searchParams: Pro
       </p>
 
       {/* Tab bar */}
-      <div style={{ display: "flex", gap: 2, borderBottom: "2px solid var(--usapt-border-strong)", marginBottom: 24 }}>
+      <div style={{ display: "flex", gap: 2, borderBottom: "1px solid var(--usapt-border)", marginBottom: 24 }}>
         {TABS.map((t) => {
           const active = t.key === tab;
           return (
@@ -126,7 +126,7 @@ export default async function SourcingPage({ searchParams }: { searchParams: Pro
                         </strong>
                         <span style={{ fontSize: 11, color: "var(--status-action-text)" }}>{p.cadenceRuleId ? "from cadence" : "manual"}</span>
                       </div>
-                      <div style={{ background: "#fff", border: "1px solid var(--usapt-border)", padding: 10, fontSize: 12.5, lineHeight: 1.5, whiteSpace: "pre-wrap" }}>
+                      <div style={{ background: "var(--usapt-surface-raised)", border: "1px solid var(--usapt-border)", padding: 10, fontSize: 12.5, lineHeight: 1.5, whiteSpace: "pre-wrap" }}>
                         {pkg?.copy}
                         {"\n\n"}Apply / schedule: {pkg?.schedulingLink}
                         {"\n"}Questions? {pkg?.contactNumber}
@@ -196,13 +196,13 @@ export default async function SourcingPage({ searchParams }: { searchParams: Pro
                     <td style={{ ...td, fontSize: 13 }}>
                       <form action={setSpendAction.bind(null, p.id)} style={{ display: "flex", gap: 4 }}>
                         <input name="spend" defaultValue={p.spend ?? ""} placeholder="$" style={{ width: 70, padding: "4px 6px", fontSize: 12, border: "1px solid var(--usapt-border)" }} />
-                        <button type="submit" style={{ padding: "4px 8px", fontSize: 11, border: "1px solid var(--usapt-border)", background: "#fff", cursor: "pointer" }}>Save</button>
+                        <button type="submit" style={{ padding: "4px 8px", fontSize: 11, border: "1px solid var(--usapt-border)", background: "var(--usapt-surface-raised)", cursor: "pointer" }}>Save</button>
                       </form>
                     </td>
                     <td style={{ ...td, textAlign: "right" }}>
                       {p.status === "live" ? (
                         <form action={endPostingAction.bind(null, p.id)}>
-                          <button type="submit" style={{ padding: "4px 10px", fontSize: 12, border: "1px solid var(--usapt-border)", background: "#fff", cursor: "pointer" }}>End</button>
+                          <button type="submit" style={{ padding: "4px 10px", fontSize: 12, border: "1px solid var(--usapt-border)", background: "var(--usapt-surface-raised)", cursor: "pointer" }}>End</button>
                         </form>
                       ) : null}
                     </td>
@@ -228,7 +228,7 @@ export default async function SourcingPage({ searchParams }: { searchParams: Pro
             The Sunday/Tuesday/Thursday cadence that fires automatically — no one has to remember it&rsquo;s Tuesday. To
             change the schedule, edit the rules in <Link href="/settings/cadence-rules" style={{ color: "var(--usapt-brand-blue)" }}>Settings → Cadence rules</Link>.
           </p>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 2, background: "var(--usapt-border)", border: "2px solid var(--usapt-border-strong)" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 2, background: "var(--usapt-border)", border: "1px solid var(--usapt-border)" }}>
             {DAYS.map((day, i) => {
               const dayRules = rules.filter((r) => r.dayOfWeek === i);
               const isToday = i === dow;

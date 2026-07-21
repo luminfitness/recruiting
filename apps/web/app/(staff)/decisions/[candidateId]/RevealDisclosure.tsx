@@ -37,7 +37,7 @@ export function RevealDisclosure({ candidateId }: { candidateId: string }) {
       <button
         type="submit"
         disabled={pending}
-        style={{ width: "100%", textAlign: "left", padding: "10px 12px", fontFamily: "inherit", fontWeight: 600, fontSize: 13, border: "1px solid var(--usapt-border-strong)", background: "#fff", cursor: pending ? "default" : "pointer" }}
+        style={{ width: "100%", textAlign: "left", padding: "10px 12px", fontFamily: "inherit", fontWeight: 600, fontSize: 13, border: "1px solid var(--usapt-border-strong)", background: "var(--usapt-surface-raised)", cursor: pending ? "default" : "pointer" }}
       >
         ◆ {pending ? "Logging access…" : "Reveal detail — logs access"}
       </button>

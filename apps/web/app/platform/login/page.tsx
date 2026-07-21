@@ -9,7 +9,7 @@ export default function PlatformLoginPage() {
   const [state, formAction, pending] = useActionState(requestPlatformLinkAction, initial);
   return (
     <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--usapt-ink)", fontFamily: "var(--font-archivo), system-ui, sans-serif" }}>
-      <div style={{ width: 360, maxWidth: "100%", padding: 32, background: "#fff", border: "2px solid var(--usapt-brand-red)" }}>
+      <div style={{ width: 360, maxWidth: "100%", padding: 32, borderRadius: "var(--usapt-radius-lg)", background: "var(--usapt-surface-raised)", border: "1px solid var(--usapt-border)" }}>
         <div style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--usapt-brand-red)" }}>Grounded Labs · Platform</div>
         <h1 style={{ fontSize: 24, margin: "6px 0 20px" }}>Platform admin</h1>
         <form action={formAction} style={{ display: "flex", flexDirection: "column", gap: 12 }}>

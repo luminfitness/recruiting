@@ -20,7 +20,7 @@ export default function LoginPage() {
         color: "var(--usapt-ink)",
       }}
     >
-      <div style={{ width: 360, maxWidth: "100%", padding: 32, background: "#fff", border: "2px solid var(--usapt-border-strong)" }}>
+      <div style={{ width: 360, maxWidth: "100%", padding: 32, background: "var(--usapt-surface-raised)", border: "1px solid var(--usapt-border)" }}>
         <div style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--usapt-brand-blue)" }}>
           USAPT Recruiting Platform
         </div>

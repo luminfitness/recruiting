@@ -16,7 +16,7 @@ export default async function IntegrationsPage() {
 
   const current = await withUser((tx, _c, user) => listIntegrations(tx, user.orgId));
   const byCat = new Map(current.map((c) => [c.category, c]));
-  const inputStyle: React.CSSProperties = { padding: "8px 10px", fontSize: 13, border: "1px solid var(--usapt-border)", background: "#fff" };
+  const inputStyle: React.CSSProperties = { padding: "8px 10px", fontSize: 13, border: "1px solid var(--usapt-border)", background: "var(--usapt-surface-raised)" };
 
   return (
     <div style={{ padding: "34px 40px 60px", maxWidth: 720 }}>

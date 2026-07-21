@@ -1,8 +1,13 @@
+import { redirect } from "next/navigation";
 import { desc } from "drizzle-orm";
 import { messagesLog } from "@usapt/db/schema";
+import { requireUser, hasRole } from "@/lib/auth";
 import { withUser } from "@/lib/db-context";
 
 export default async function OutboxPage() {
+  const authed = await requireUser();
+  if (!hasRole(authed, "admin")) redirect("/settings/appearance");
+
   const rows = await withUser((tx) => tx.select().from(messagesLog).orderBy(desc(messagesLog.createdAt)).limit(100));
 
   const td: React.CSSProperties = { padding: "12px", borderBottom: "1px solid var(--usapt-border)", fontSize: 13, verticalAlign: "top" };
@@ -13,7 +18,7 @@ export default async function OutboxPage() {
     textTransform: "uppercase",
     color: "var(--usapt-text-muted)",
     padding: "8px 12px",
-    borderBottom: "2px solid var(--usapt-border-strong)",
+    borderBottom: "1px solid var(--usapt-border)",
   };
 
   return (

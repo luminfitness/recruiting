@@ -18,7 +18,7 @@ export default async function NewCandidatePage() {
     padding: "10px 12px",
     fontSize: 14,
     border: "1px solid var(--usapt-border)",
-    background: "#fff",
+    background: "var(--usapt-surface-raised)",
     width: "100%",
   };
   const labelStyle: React.CSSProperties = { fontSize: 12, fontWeight: 600, display: "block", marginBottom: 6 };

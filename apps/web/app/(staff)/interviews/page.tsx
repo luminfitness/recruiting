@@ -33,10 +33,10 @@ export default async function RosterIndexPage() {
     textTransform: "uppercase",
     color: "var(--usapt-text-muted)",
     padding: "8px 12px",
-    borderBottom: "2px solid var(--usapt-border-strong)",
+    borderBottom: "1px solid var(--usapt-border)",
   };
   const td: React.CSSProperties = { padding: "12px", borderBottom: "1px solid var(--usapt-border)", fontSize: 13.5 };
-  const inputStyle: React.CSSProperties = { padding: "8px 10px", fontSize: 13, border: "1px solid var(--usapt-border)", background: "#fff" };
+  const inputStyle: React.CSSProperties = { padding: "8px 10px", fontSize: 13, border: "1px solid var(--usapt-border)", background: "var(--usapt-surface-raised)" };
 
   return (
     <div style={{ padding: "34px 40px 60px" }}>
@@ -46,7 +46,7 @@ export default async function RosterIndexPage() {
       <h1 style={{ fontSize: 30, margin: "4px 0 20px" }}>Interviews</h1>
 
       <section style={{ marginBottom: 32 }}>
-        <h3 style={{ fontSize: 15, margin: "0 0 10px", borderBottom: "2px solid var(--usapt-border-strong)", paddingBottom: 8 }}>
+        <h3 style={{ fontSize: 15, margin: "0 0 10px", borderBottom: "1px solid var(--usapt-border)", paddingBottom: 8 }}>
           Schedule a session
         </h3>
         <form action={createSessionAction} style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>

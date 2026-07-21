@@ -1,5 +1,4 @@
 import type { StatusFamily } from "./tokens";
-import { tokens } from "./tokens";
 
 /**
  * Ported 1:1 from the Claude Design project's StatusPill.dc.html preview
@@ -10,11 +9,11 @@ import { tokens } from "./tokens";
  */
 
 const FAMILY_BORDER: Record<StatusFamily, string> = {
-  motion: "rgba(36,74,114,0.18)",
-  action: "rgba(122,77,5,0.20)",
-  positive: "rgba(30,85,55,0.18)",
-  negative: "rgba(96,93,93,0.22)",
-  risk: "rgba(124,20,5,0.22)",
+  motion: "rgba(44,91,224,0.22)",
+  action: "rgba(224,145,15,0.24)",
+  positive: "rgba(22,163,74,0.22)",
+  negative: "rgba(124,118,106,0.24)",
+  risk: "rgba(239,68,68,0.26)",
 };
 
 const FAMILY_SHAPE: Record<StatusFamily, string> = {
@@ -144,7 +143,14 @@ export interface StatusPillProps {
 
 export function StatusPill({ status, label }: StatusPillProps) {
   const family = STATUS_FAMILY[status] ?? "motion";
-  const palette = tokens.status[family];
+  // Read the family's colors from CSS custom properties (not the baked
+  // tokens.json values) so pills adapt when the console flips to Flat-Dark.
+  // The light values in tokens.css :root match tokens.json 1:1.
+  const palette = {
+    fill: `var(--status-${family}-fill)`,
+    text: `var(--status-${family}-text)`,
+    marker: `var(--status-${family}-marker)`,
+  };
   const shape = FAMILY_SHAPE[family];
   const border = FAMILY_BORDER[family];
   const text = label ?? STATUS_LABEL[status] ?? status;
@@ -161,6 +167,7 @@ export function StatusPill({ status, label }: StatusPillProps) {
         whiteSpace: "nowrap",
         fontWeight: 600,
         letterSpacing: "0.01em",
+        borderRadius: 999,
         background: palette.fill,
         color: palette.text,
         boxShadow: `inset 0 0 0 1px ${border}`,

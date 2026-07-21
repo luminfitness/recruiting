@@ -9,11 +9,11 @@ export default async function TmQueuePage() {
     <div style={{ background: "var(--usapt-bg)", minHeight: "100%" }}>
       <div style={{ background: "var(--usapt-brand-blue)", color: "#fff", padding: "16px 18px" }}>
         <span style={{ fontSize: 13, fontWeight: 700 }}>No-show outreach</span>
-        <div style={{ fontSize: 11, color: "#9db4d6", marginTop: 8 }}>{queue.length} to reach · your territory</div>
+        <div style={{ fontSize: 11, color: "var(--usapt-text-faint)", marginTop: 8 }}>{queue.length} to reach · your territory</div>
       </div>
       <div style={{ padding: 14, display: "flex", flexDirection: "column", gap: 12 }}>
           {queue.map((c) => (
-            <div key={c.candidateId} style={{ background: "#fff", border: "1px solid var(--usapt-border)", padding: 14 }}>
+            <div key={c.candidateId} style={{ background: "var(--usapt-surface-raised)", border: "1px solid var(--usapt-border)", padding: 14 }}>
               <div style={{ fontSize: 16, fontWeight: 700 }}>{c.name}</div>
               <div style={{ fontSize: 12, color: "var(--usapt-text-muted)", marginTop: 2, textTransform: "capitalize" }}>
                 {c.roleType} · {c.marketName}
@@ -42,7 +42,7 @@ export default async function TmQueuePage() {
             </div>
           ))}
           {queue.length === 0 ? (
-            <div style={{ background: "#fff", border: "1px solid var(--usapt-border)", padding: 16, fontSize: 13, color: "var(--usapt-text-muted)" }}>
+            <div style={{ background: "var(--usapt-surface-raised)", border: "1px solid var(--usapt-border)", padding: 16, fontSize: 13, color: "var(--usapt-text-muted)" }}>
               No no-shows to work right now. When a candidate misses their session, they appear here for outreach.
             </div>
           ) : null}

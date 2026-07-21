@@ -136,11 +136,11 @@ export default async function TodayPage() {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    borderBottom: "2px solid var(--usapt-border-strong)",
-    paddingBottom: 8,
+    borderBottom: "1px solid var(--usapt-border)",
+    paddingBottom: 10,
   };
   const btnPrimary: React.CSSProperties = { padding: "9px 16px", fontFamily: "inherit", fontWeight: 700, fontSize: 13, color: "#fff", background: "var(--usapt-brand-blue)", border: 0, textDecoration: "none", whiteSpace: "nowrap" };
-  const btnSecondary: React.CSSProperties = { padding: "9px 16px", fontFamily: "inherit", fontWeight: 700, fontSize: 13, color: "var(--usapt-ink)", background: "#fff", border: "1px solid var(--usapt-border-strong)", textDecoration: "none", whiteSpace: "nowrap" };
+  const btnSecondary: React.CSSProperties = { padding: "9px 16px", fontFamily: "inherit", fontWeight: 700, fontSize: 13, color: "var(--usapt-ink)", background: "var(--usapt-surface-raised)", border: "1px solid var(--usapt-border-strong)", textDecoration: "none", whiteSpace: "nowrap" };
 
   return (
     <div style={{ padding: "34px 40px 48px" }}>
@@ -158,9 +158,9 @@ export default async function TodayPage() {
       </div>
 
       {/* Stat grid — 6 cols, 2px gridlines, 2px ink border (Modernist) */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(6,1fr)", gap: 2, background: "var(--usapt-border)", border: "2px solid var(--usapt-border-strong)", marginTop: 32 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(6,1fr)", gap: 1, background: "var(--usapt-border)", border: "1px solid var(--usapt-border)", borderRadius: "var(--usapt-radius-lg)", overflow: "hidden", boxShadow: "var(--usapt-shadow-sm)", marginTop: 32 }}>
         {stats.map((s) => (
-          <div key={s.label} style={{ background: "var(--usapt-bg)", padding: "20px 18px 22px" }}>
+          <div key={s.label} style={{ background: "var(--usapt-surface-raised)", padding: "20px 18px 22px" }}>
             <div style={{ fontSize: 10, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--usapt-neutral-600)" }}>{s.label}</div>
             <div style={{ fontFamily: "var(--font-archivo), sans-serif", fontWeight: 800, fontSize: 30, fontVariantNumeric: "tabular-nums", lineHeight: 1.05, marginTop: 6 }}>{s.value}</div>
             <div style={{ fontSize: 11, marginTop: 3, color: "var(--usapt-text-muted)" }}>{s.sub}</div>

@@ -32,7 +32,7 @@ export default async function RosterPage({ params }: { params: Promise<{ id: str
         → Roster
       </div>
 
-      <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: 16, borderBottom: "2px solid var(--usapt-border-strong)", paddingBottom: 14 }}>
+      <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: 16, borderBottom: "1px solid var(--usapt-border)", paddingBottom: 14 }}>
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <span style={{ width: 8, height: 8, background: "var(--usapt-brand-red)", borderRadius: "50%" }} />
@@ -45,7 +45,7 @@ export default async function RosterPage({ params }: { params: Promise<{ id: str
             {new Date(view.session.scheduledAt).toLocaleString()}
           </p>
         </div>
-        <div style={{ display: "flex", gap: 2, background: "var(--usapt-border)", border: "2px solid var(--usapt-border-strong)" }}>
+        <div style={{ display: "flex", gap: 2, background: "var(--usapt-border)", border: "1px solid var(--usapt-border)" }}>
           <div style={{ background: "var(--usapt-bg)", padding: "8px 16px", textAlign: "center" }}>
             <div style={{ fontFamily: "var(--font-archivo-black)", fontSize: 22, fontVariantNumeric: "tabular-nums" }}>
               {view.presentCount}
@@ -83,7 +83,7 @@ export default async function RosterPage({ params }: { params: Promise<{ id: str
                     <StatusPill status={r.status} />
                     <Link
                       href={`/score/${r.candidateId}`}
-                      style={{ padding: "5px 12px", whiteSpace: "nowrap", fontFamily: "inherit", fontWeight: 600, fontSize: 12.5, border: "1px solid var(--usapt-border-strong)", background: "#fff", textDecoration: "none", color: "var(--usapt-ink)" }}
+                      style={{ padding: "5px 12px", whiteSpace: "nowrap", fontFamily: "inherit", fontWeight: 600, fontSize: 12.5, border: "1px solid var(--usapt-border-strong)", background: "var(--usapt-surface-raised)", textDecoration: "none", color: "var(--usapt-ink)" }}
                     >
                       Score →
                     </Link>
@@ -94,7 +94,7 @@ export default async function RosterPage({ params }: { params: Promise<{ id: str
                     <input type="hidden" name="candidateId" value={r.candidateId} />
                     <button
                       type="submit"
-                      style={{ padding: "5px 12px", whiteSpace: "nowrap", fontFamily: "inherit", fontWeight: 600, fontSize: 12.5, border: "1px solid var(--usapt-border-strong)", background: "#fff", cursor: "pointer" }}
+                      style={{ padding: "5px 12px", whiteSpace: "nowrap", fontFamily: "inherit", fontWeight: 600, fontSize: 12.5, border: "1px solid var(--usapt-border-strong)", background: "var(--usapt-surface-raised)", cursor: "pointer" }}
                     >
                       Confirm present
                     </button>
@@ -110,7 +110,7 @@ export default async function RosterPage({ params }: { params: Promise<{ id: str
 
         <section>
           <div style={{ border: "2px solid var(--status-action-marker)", background: "var(--status-action-fill)" }}>
-            <div style={{ padding: "11px 14px", borderBottom: "1px solid rgba(122,77,5,0.2)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <div style={{ padding: "11px 14px", borderBottom: "1px solid var(--usapt-border)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <h4 style={{ fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--status-action-text)", margin: 0 }}>
                 Unmatched participants
               </h4>
@@ -149,7 +149,7 @@ export default async function RosterPage({ params }: { params: Promise<{ id: str
             </div>
             <form action={simulate} style={{ display: "flex", gap: 6 }}>
               <input name="displayName" placeholder="Participant name from meeting" style={{ flex: 1, fontSize: 12, padding: "6px 8px", border: "1px solid var(--usapt-border)" }} />
-              <button type="submit" style={{ padding: "6px 10px", fontFamily: "inherit", fontWeight: 600, fontSize: 12, border: "1px solid var(--usapt-border-strong)", background: "#fff", cursor: "pointer" }}>
+              <button type="submit" style={{ padding: "6px 10px", fontFamily: "inherit", fontWeight: 600, fontSize: 12, border: "1px solid var(--usapt-border-strong)", background: "var(--usapt-surface-raised)", cursor: "pointer" }}>
                 Add
               </button>
             </form>

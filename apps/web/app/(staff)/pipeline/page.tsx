@@ -46,15 +46,15 @@ export default async function PipelinePage({ searchParams }: { searchParams: Pro
     fontSize: 12,
     padding: "5px 11px",
     border: "1px solid var(--usapt-border-strong)",
-    background: active ? "var(--usapt-brand-blue)" : "#fff",
+    background: active ? "var(--usapt-brand-blue)" : "var(--usapt-surface-raised)",
     color: active ? "#fff" : "var(--usapt-ink)",
     textDecoration: "none",
   });
-  const selStyle: React.CSSProperties = { padding: "6px 8px", fontSize: 12, border: "1px solid var(--usapt-border)", background: "#fff" };
+  const selStyle: React.CSSProperties = { padding: "6px 8px", fontSize: 12, border: "1px solid var(--usapt-border)", background: "var(--usapt-surface-raised)" };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      <div style={{ padding: "30px 40px 16px", borderBottom: "2px solid var(--usapt-border-strong)" }}>
+      <div style={{ padding: "30px 40px 16px", borderBottom: "1px solid var(--usapt-border)" }}>
         <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
           <div>
             <div style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--usapt-brand-blue)" }}>
@@ -121,16 +121,16 @@ export default async function PipelinePage({ searchParams }: { searchParams: Pro
 
       {view === "kanban" ? (
         <div className="usapt-scroll" style={{ flex: 1, overflow: "auto", padding: "24px 40px 34px" }}>
-          <div style={{ display: "flex", gap: 2, alignItems: "flex-start", background: "var(--usapt-border)", border: "2px solid var(--usapt-border-strong)", minWidth: "min-content" }}>
+          <div style={{ display: "flex", gap: 2, alignItems: "flex-start", background: "var(--usapt-border)", border: "1px solid var(--usapt-border)", minWidth: "min-content" }}>
             {byColumn.map((col) => (
               <div key={col.key} style={{ width: 224, flex: "none", background: "var(--usapt-bg)", display: "flex", flexDirection: "column" }}>
-                <div style={{ padding: "10px 12px", borderBottom: "2px solid var(--usapt-border-strong)", display: "flex", justifyContent: "space-between" }}>
+                <div style={{ padding: "10px 12px", borderBottom: "1px solid var(--usapt-border)", display: "flex", justifyContent: "space-between" }}>
                   <span style={{ fontSize: 11, letterSpacing: "0.06em", textTransform: "uppercase", fontWeight: 700 }}>{col.title}</span>
                   <span style={{ fontSize: 11, color: "var(--usapt-text-muted)", fontVariantNumeric: "tabular-nums" }}>{col.cards.length}</span>
                 </div>
                 <div style={{ padding: 10, display: "flex", flexDirection: "column", gap: 10, minHeight: 80 }}>
                   {col.cards.map((card) => (
-                    <Link key={card.id} href={`/candidates/${card.id}`} style={{ background: "#fff", border: "1px solid var(--usapt-border)", padding: 10, boxShadow: "var(--usapt-shadow-sm)", textDecoration: "none", color: "var(--usapt-ink)" }}>
+                    <Link key={card.id} href={`/candidates/${card.id}`} style={{ background: "var(--usapt-surface-raised)", border: "1px solid var(--usapt-border)", padding: 10, boxShadow: "var(--usapt-shadow-sm)", textDecoration: "none", color: "var(--usapt-ink)" }}>
                       <div style={{ fontSize: 13.5, fontWeight: 700, lineHeight: 1.15 }}>{card.name}</div>
                       <div style={{ fontSize: 11, color: "var(--usapt-text-muted)", marginTop: 3, textTransform: "capitalize" }}>
                         {card.roleType} · {card.marketName}
@@ -152,7 +152,7 @@ export default async function PipelinePage({ searchParams }: { searchParams: Pro
             <thead>
               <tr>
                 {["Candidate", "Role", "Brand", "Market", "Source", "Status", "Grade", "Quiz", "Age"].map((h) => (
-                  <th key={h} style={{ position: "sticky", top: 0, background: "var(--usapt-bg)", textAlign: "left", fontSize: 10, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--usapt-text-muted)", padding: "10px 12px", borderBottom: "2px solid var(--usapt-border-strong)" }}>
+                  <th key={h} style={{ position: "sticky", top: 0, background: "var(--usapt-bg)", textAlign: "left", fontSize: 10, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--usapt-text-muted)", padding: "10px 12px", borderBottom: "1px solid var(--usapt-border)" }}>
                     {h}
                   </th>
                 ))}

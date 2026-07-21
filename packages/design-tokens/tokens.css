@@ -1,85 +1,203 @@
 /* ============================================================================
    USAPT Recruiting Platform — Design Tokens
-   Source of truth: Claude Design project "USAPT Recruiting Platform Design"
-   (tokens.css / tokens.json, Modernist design system). Copied verbatim where
-   the value is a real CSS custom property; the string-valued brand identity
-   fields (name/sender/logo) are NOT CSS-representable and instead live in
-   packages/design-tokens/src/tokens.ts as a typed BrandTheme, populated per
-   Brand row at request time by ThemeProvider — see src/ThemeProvider.tsx.
+   Look system: "Flat" (Lumin Core base). Warm-cream, opaque surfaces, hairline
+   borders, minimal soft shadow, no blur/glow, near-black ink on cream, a single
+   indigo brand accent + status colors. Matches the Lumin product family.
+
+   Token NAMES are kept stable (--usapt-*) so existing var() references across
+   the app pick up the Flat values automatically; the Modernist values were
+   swapped out here. Structural Modernist traits set inline (heavy borders, zero
+   radius) are softened at the component layer + globals.css.
 
    Layers:
-     1. Base (from Modernist)   — ground, ink, corporate accent, neutral ramp
-     2. Semantic               — surface / border / text hierarchy
-     3. Status taxonomy        — FIVE families only (FRD constraint)
-     4. Brand theme layer      — swappable per candidate-facing brand (color-only)
+     1. Base        — cream ground, ink, indigo brand accent, warm neutral ramp
+     2. Semantic    — surface / hairline / text hierarchy
+     3. Status      — FIVE families (FRD constraint), on the Flat palette
+     4. Brand theme — swappable per candidate-facing brand (color-only)
    ========================================================================== */
 
 :root {
-  /* — 1. Base (Modernist) ------------------------------------------------ */
-  --usapt-bg:            #f3f2f2;
-  --usapt-surface:       #eae9e9;
-  --usapt-ink:           #201e1d;
-  --usapt-brand-blue:    #0e4091;   /* USA PT corporate navy — nav rail, brand identity, screen kickers */
-  --usapt-brand-red:     #e71f2a;   /* matched from logo — primary actions, small emphasis */
+  /* — 1. Base (Lumin Flat) ---------------------------------------------- */
+  --usapt-bg:            #f3ede1;   /* warm cream page field */
+  --usapt-surface:       #efe7d8;   /* inset / subtle fill (surface-2) */
+  --usapt-surface-raised:#fbf8f1;   /* raised cards on cream */
+  --usapt-ink:           #1c1a15;   /* near-black warm ink */
+  --usapt-brand-blue:    #2c5be0;   /* indigo brand accent — kickers, primary, nav active */
+  --usapt-brand-ink:     #123;      /* placeholder, overridden below */
+  --usapt-brand-red:     #2c5be0;   /* Flat is single-accent: former red emphasis unifies to brand */
 
-  --usapt-neutral-100:   #f8f4f4;
-  --usapt-neutral-200:   #eae7e7;
-  --usapt-neutral-300:   #d7d3d3;
-  --usapt-neutral-400:   #bab6b6;
-  --usapt-neutral-500:   #9b9797;
-  --usapt-neutral-600:   #7d7979;
-  --usapt-neutral-700:   #605d5d;
-  --usapt-neutral-800:   #444141;
-  --usapt-neutral-900:   #2d2b2b;
+  --usapt-neutral-100:   #fbf8f1;
+  --usapt-neutral-200:   #efe7d8;
+  --usapt-neutral-300:   #e2d9c9;
+  --usapt-neutral-400:   #c8bfae;
+  --usapt-neutral-500:   #a8a192;
+  --usapt-neutral-600:   #7c766a;
+  --usapt-neutral-700:   #565048;
+  --usapt-neutral-800:   #3a352e;
+  --usapt-neutral-900:   #1c1a15;
 
   /* — 2. Semantic -------------------------------------------------------- */
-  --usapt-text:          #201e1d;
-  --usapt-text-muted:    #605d5d;
-  --usapt-text-faint:    #9b9797;
-  --usapt-border:        #d7d3d3;
-  --usapt-border-strong: #201e1d;   /* the 2px modular rule */
+  --usapt-text:          #1c1a15;
+  --usapt-text-muted:    #7c766a;
+  --usapt-text-faint:    #a8a192;
+  --usapt-border:        rgba(28,26,21,0.11);   /* hairline */
+  --usapt-border-strong: rgba(28,26,21,0.20);   /* soft divider (was the 2px ink rule) */
 
-  /* — 3. Status taxonomy (FIVE families; differentiate WITHIN by label) -- */
-  --status-motion-fill:   #e8eef5;
-  --status-motion-text:   #244a72;
-  --status-motion-marker: #3d6da3;
+  --usapt-brand-soft:    #e8ecfb;               /* brand tint fill */
+  --usapt-brand-ink:     #1a3aa0;               /* darker brand for text/emphasis on cream */
 
-  --status-action-fill:   #fbefd6;
+  /* — 3. Status taxonomy (FIVE families; Flat palette) ------------------ */
+  --status-motion-fill:   #e8ecfb;
+  --status-motion-text:   #26377a;
+  --status-motion-marker: #2c5be0;
+
+  --status-action-fill:   #fbeecf;
   --status-action-text:   #7a4d05;
-  --status-action-marker: #c07d13;
+  --status-action-marker: #e0910f;
 
-  --status-positive-fill:   #dcefe2;
-  --status-positive-text:   #1e5537;
-  --status-positive-marker: #2f8158;
+  --status-positive-fill:   #d8efdf;
+  --status-positive-text:   #12603a;
+  --status-positive-marker: #16a34a;
 
-  --status-negative-fill:   #eae7e7;
-  --status-negative-text:   #605d5d;
-  --status-negative-marker: #9b9797;
+  --status-negative-fill:   #ece4d6;
+  --status-negative-text:   #7c766a;
+  --status-negative-marker: #a8a192;
 
-  --status-risk-fill:   #ffe0d9;
-  --status-risk-text:   #7c1405;
-  --status-risk-marker: #e71f2a;
+  --status-risk-fill:   #fbe1dd;
+  --status-risk-text:   #8f1d16;
+  --status-risk-marker: #ef4444;
 
-  /* — Chart palette (funnel + conversion) ------------------------------- */
-  --chart-1: #3d6da3;
-  --chart-2: #2f8158;
-  --chart-3: #c07d13;
-  --chart-4: #7d7979;
-  --chart-5: #e71f2a;
+  /* — Chart / accent role palette (Lumin role colors) ------------------- */
+  --chart-1: #6366f1;
+  --chart-2: #0ea5e9;
+  --chart-3: #16a34a;
+  --chart-4: #f59e0b;
+  --chart-5: #8b5cf6;
 
-  /* — Spacing / radius / elevation (Modernist: 1.00x, 0 radius) --------- */
+  /* — Spacing / radius / elevation (Flat: rounded, soft) ---------------- */
   --usapt-space-1: 4px;  --usapt-space-2: 8px;  --usapt-space-3: 12px;
   --usapt-space-4: 16px; --usapt-space-6: 24px; --usapt-space-8: 32px;
-  --usapt-radius: 0px;
-  --usapt-shadow-sm: 0 1px 2px color-mix(in srgb, #2d2b2b 14%, transparent);
-  --usapt-shadow-md: 0 3px 10px color-mix(in srgb, #2d2b2b 16%, transparent);
-  --usapt-shadow-lg: 0 12px 32px color-mix(in srgb, #2d2b2b 22%, transparent);
+  --usapt-radius-sm:   10px;   /* controls: inputs, small buttons */
+  --usapt-radius:      12px;   /* default control / small card */
+  --usapt-radius-lg:   16px;   /* cards, panels */
+  --usapt-radius-pill: 999px;  /* pills, toggles, avatars */
+  --usapt-shadow-sm: 0 1px 2px rgba(28,26,21,0.05);
+  --usapt-shadow-md: 0 2px 10px -4px rgba(28,26,21,0.12);
+  --usapt-shadow-lg: 0 12px 32px -18px rgba(28,26,21,0.20);
+  --usapt-shadow-brand: 0 10px 24px -12px rgba(44,91,224,0.55);  /* glow on primary buttons */
 
-  /* — 4. Brand theme layer (color-only; default = USAPT corporate) ------
-     Candidate-facing surfaces (the (candidate) route group) read ONLY
-     these three color tokens, overridden per-Brand by ThemeProvider.
-     Staff surfaces never read this layer. */
-  --brand-primary: #0e4091;
-  --brand-ink:     #201e1d;
-  --brand-tint:    #e7edf6;
+  /* — Typography --------------------------------------------------------- */
+  --usapt-font-sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --usapt-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  /* Flat uses system sans; alias the old Modernist display fonts to it so the
+     many inline `var(--font-archivo*)` references re-express as system sans. */
+  --font-archivo: var(--usapt-font-sans);
+  --font-archivo-black: var(--usapt-font-sans);
+
+  /* — 4. Brand theme layer (color-only; default = brand accent) ---------
+     Candidate-facing surfaces read ONLY these three color tokens, overridden
+     per-Brand by ThemeProvider. Staff surfaces never read this layer. */
+  --brand-primary: #2c5be0;
+  --brand-ink:     #1c1a15;
+  --brand-tint:    #e8ecfb;
+}
+
+/* ============================================================================
+   DARK LOOK — "Flat Dark". A warm-neutral dark inverse of the cream Flat look:
+   opaque dark surfaces, hairline light borders, minimal shadow. This is NOT the
+   Lumin "Glassy" navy/translucent look — no blur, no glow, no gradient field.
+
+   Scoped to the element that carries data-theme (the staff console shell), NOT
+   :root — so candidate-facing, field, and platform surfaces keep their own
+   designed looks and never flip. Only the base / semantic / status tokens flip;
+   the brand hue is constant (brand-ink/soft lighten for contrast on dark).
+
+   Applied when the user picks Dark, or picks System and the OS is in dark mode.
+   The two dark blocks below (explicit + system media query) are identical —
+   keep them in sync.
+   ========================================================================== */
+[data-theme="dark"] {
+  --usapt-bg:            #17140d;   /* warm near-black page field */
+  --usapt-surface:       #211c14;   /* inset / subtle fill */
+  --usapt-surface-raised:#2a251b;   /* raised cards on the page */
+  --usapt-ink:           #f3eee2;   /* warm off-white ink */
+
+  --usapt-neutral-100:   #2a251b;
+  --usapt-neutral-200:   #322c21;
+  --usapt-neutral-300:   #3d3629;
+  --usapt-neutral-400:   #544b3a;
+  --usapt-neutral-500:   #6e6555;
+  --usapt-neutral-600:   #9c917f;
+  --usapt-neutral-700:   #bbb1a1;
+  --usapt-neutral-800:   #dcd5c8;
+  --usapt-neutral-900:   #f3eee2;
+
+  --usapt-text:          #f3eee2;
+  --usapt-text-muted:    #b0a693;
+  --usapt-text-faint:    #837a6a;
+  --usapt-border:        rgba(243,238,226,0.12);   /* hairline (light on dark) */
+  --usapt-border-strong: rgba(243,238,226,0.22);
+
+  --usapt-brand-blue:    #4f74ec;   /* lightened indigo — reads on dark, white text still OK */
+  --usapt-brand-red:     #4f74ec;
+  --usapt-brand-soft:    #222b4d;   /* deep indigo fill for nav-active / avatars */
+  --usapt-brand-ink:     #adbef7;   /* light indigo for text / emphasis */
+
+  /* Status — deep-tint fills with brighter text + markers (readable on dark) */
+  --status-motion-fill:   #1d2a4e;  --status-motion-text:   #aec1f4;  --status-motion-marker: #6d8cf2;
+  --status-action-fill:   #382a0f;  --status-action-text:   #f0c778;  --status-action-marker: #e0910f;
+  --status-positive-fill: #143020;  --status-positive-text: #82d2a2;  --status-positive-marker:#22b364;
+  --status-negative-fill: #2b261d;  --status-negative-text: #b0a693;  --status-negative-marker:#8a8172;
+  --status-risk-fill:     #391d19;  --status-risk-text:     #f2a49b;  --status-risk-marker:   #f05a52;
+
+  --usapt-shadow-sm: 0 1px 2px rgba(0,0,0,0.45);
+  --usapt-shadow-md: 0 2px 12px -4px rgba(0,0,0,0.6);
+  --usapt-shadow-lg: 0 14px 34px -18px rgba(0,0,0,0.75);
+  --usapt-shadow-brand: 0 10px 24px -12px rgba(79,116,236,0.5);
+
+  --brand-tint: #222b4d;   /* keep brand layer coherent if ever inherited */
+}
+
+@media (prefers-color-scheme: dark) {
+  /* System preference: same Flat-Dark palette — keep in sync with the block above. */
+  [data-theme="system"] {
+    --usapt-bg:            #17140d;
+    --usapt-surface:       #211c14;
+    --usapt-surface-raised:#2a251b;
+    --usapt-ink:           #f3eee2;
+
+    --usapt-neutral-100:   #2a251b;
+    --usapt-neutral-200:   #322c21;
+    --usapt-neutral-300:   #3d3629;
+    --usapt-neutral-400:   #544b3a;
+    --usapt-neutral-500:   #6e6555;
+    --usapt-neutral-600:   #9c917f;
+    --usapt-neutral-700:   #bbb1a1;
+    --usapt-neutral-800:   #dcd5c8;
+    --usapt-neutral-900:   #f3eee2;
+
+    --usapt-text:          #f3eee2;
+    --usapt-text-muted:    #b0a693;
+    --usapt-text-faint:    #837a6a;
+    --usapt-border:        rgba(243,238,226,0.12);
+    --usapt-border-strong: rgba(243,238,226,0.22);
+
+    --usapt-brand-blue:    #4f74ec;
+    --usapt-brand-red:     #4f74ec;
+    --usapt-brand-soft:    #222b4d;
+    --usapt-brand-ink:     #adbef7;
+
+    --status-motion-fill:   #1d2a4e;  --status-motion-text:   #aec1f4;  --status-motion-marker: #6d8cf2;
+    --status-action-fill:   #382a0f;  --status-action-text:   #f0c778;  --status-action-marker: #e0910f;
+    --status-positive-fill: #143020;  --status-positive-text: #82d2a2;  --status-positive-marker:#22b364;
+    --status-negative-fill: #2b261d;  --status-negative-text: #b0a693;  --status-negative-marker:#8a8172;
+    --status-risk-fill:     #391d19;  --status-risk-text:     #f2a49b;  --status-risk-marker:   #f05a52;
+
+    --usapt-shadow-sm: 0 1px 2px rgba(0,0,0,0.45);
+    --usapt-shadow-md: 0 2px 12px -4px rgba(0,0,0,0.6);
+    --usapt-shadow-lg: 0 14px 34px -18px rgba(0,0,0,0.75);
+    --usapt-shadow-brand: 0 10px 24px -12px rgba(79,116,236,0.5);
+
+    --brand-tint: #222b4d;
+  }
 }

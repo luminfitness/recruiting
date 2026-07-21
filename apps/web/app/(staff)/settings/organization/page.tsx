@@ -41,14 +41,14 @@ export default async function AdminPage() {
   const headingStyle: React.CSSProperties = {
     fontSize: 17,
     margin: 0,
-    borderBottom: "2px solid var(--usapt-border-strong)",
+    borderBottom: "1px solid var(--usapt-border)",
     paddingBottom: 8,
   };
   const inputStyle: React.CSSProperties = {
     padding: "8px 10px",
     fontSize: 13,
     border: "1px solid var(--usapt-border)",
-    background: "#fff",
+    background: "var(--usapt-surface-raised)",
   };
   const buttonStyle: React.CSSProperties = {
     padding: "8px 14px",

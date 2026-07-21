@@ -66,7 +66,7 @@ export default async function ScorePage({ params }: { params: Promise<{ candidat
                         textAlign: "center",
                         padding: "10px 0",
                         border: `1px solid ${checked ? "var(--usapt-brand-blue)" : "var(--usapt-border)"}`,
-                        background: checked ? "var(--status-motion-fill)" : "#fff",
+                        background: checked ? "var(--status-motion-fill)" : "var(--usapt-surface-raised)",
                         cursor: "pointer",
                         fontWeight: 700,
                         fontSize: 14,
@@ -97,7 +97,7 @@ export default async function ScorePage({ params }: { params: Promise<{ candidat
           <button
             type="submit"
             formAction={saveDraft}
-            style={{ padding: "12px 18px", fontFamily: "inherit", fontWeight: 700, fontSize: 14, border: "1px solid var(--usapt-border-strong)", background: "#fff", cursor: "pointer" }}
+            style={{ padding: "12px 18px", fontFamily: "inherit", fontWeight: 700, fontSize: 14, border: "1px solid var(--usapt-border-strong)", background: "var(--usapt-surface-raised)", cursor: "pointer" }}
           >
             Save draft
           </button>

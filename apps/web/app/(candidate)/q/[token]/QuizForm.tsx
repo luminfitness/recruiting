@@ -50,7 +50,7 @@ export function QuizForm({ token, quiz, initialAnswers, initialWritten, initialA
           </span>
         </div>
         <div style={{ height: 6, background: "rgba(255,255,255,0.3)", marginTop: 14 }}>
-          <div style={{ height: "100%", background: "#fff", width: `${pct}%`, transition: "width 0.3s" }} />
+          <div style={{ height: "100%", background: "var(--usapt-surface-raised)", width: `${pct}%`, transition: "width 0.3s" }} />
         </div>
         <div style={{ fontSize: 11, color: "#fff", marginTop: 6, opacity: 0.9 }}>{steps[step]}</div>
       </div>
@@ -141,7 +141,7 @@ export function QuizForm({ token, quiz, initialAnswers, initialWritten, initialA
             <button
               type="button"
               onClick={() => setStep((s) => s - 1)}
-              style={{ padding: "12px 16px", fontFamily: "inherit", fontWeight: 700, fontSize: 14, border: "1px solid var(--usapt-border-strong)", background: "#fff", cursor: "pointer" }}
+              style={{ padding: "12px 16px", fontFamily: "inherit", fontWeight: 700, fontSize: 14, border: "1px solid var(--usapt-border-strong)", background: "var(--usapt-surface-raised)", cursor: "pointer" }}
             >
               Back
             </button>

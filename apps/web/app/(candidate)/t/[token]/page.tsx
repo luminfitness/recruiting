@@ -43,7 +43,7 @@ export default async function CandidateBookingPage({ params }: { params: Promise
   return (
     <BrandThemeProvider theme={candidate.theme}>
       <div style={{ minHeight: "100vh", background: "#1a1a1a", padding: "28px 20px", display: "flex", justifyContent: "center" }}>
-        <div style={{ width: 390, maxWidth: "100%", background: "#fff", boxShadow: "var(--usapt-shadow-lg)" }}>
+        <div style={{ width: 390, maxWidth: "100%", background: "var(--usapt-surface-raised)", boxShadow: "var(--usapt-shadow-lg)" }}>
           <div style={{ background: "var(--brand-primary)", padding: "20px 22px 22px" }}>
             <div style={{ fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", color: "#fff", opacity: 0.9 }}>
               {candidate.brandName}

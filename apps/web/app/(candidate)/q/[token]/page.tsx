@@ -22,7 +22,7 @@ export default async function QuizPage({ params }: { params: Promise<{ token: st
   const shell = (children: React.ReactNode) => (
     <BrandThemeProvider theme={candidate.theme}>
       <div style={{ minHeight: "100vh", background: "#1a1a1a", padding: "28px 20px", display: "flex", justifyContent: "center" }}>
-        <div style={{ width: 390, maxWidth: "100%", background: "#fff", boxShadow: "var(--usapt-shadow-lg)" }}>{children}</div>
+        <div style={{ width: 390, maxWidth: "100%", background: "var(--usapt-surface-raised)", boxShadow: "var(--usapt-shadow-lg)" }}>{children}</div>
       </div>
     </BrandThemeProvider>
   );

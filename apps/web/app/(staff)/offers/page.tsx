@@ -57,13 +57,13 @@ export default async function OffersPage() {
   const referralsAging = referralRows.filter((r) => r.agingAlertedAt).length;
 
   const eyebrow: React.CSSProperties = { fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--usapt-brand-blue)" };
-  const th: React.CSSProperties = { textAlign: "left", fontSize: 10, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--usapt-text-muted)", padding: "8px 12px", borderBottom: "2px solid var(--usapt-border-strong)" };
+  const th: React.CSSProperties = { textAlign: "left", fontSize: 10, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--usapt-text-muted)", padding: "8px 12px", borderBottom: "1px solid var(--usapt-border)" };
   const td: React.CSSProperties = { padding: 12, borderBottom: "1px solid var(--usapt-border)", fontSize: 13, verticalAlign: "middle" };
-  const sectionTitle: React.CSSProperties = { display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "2px solid var(--usapt-border-strong)", paddingBottom: 8, marginBottom: 4 };
+  const sectionTitle: React.CSSProperties = { display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid var(--usapt-border)", paddingBottom: 8, marginBottom: 4 };
   const agingPill = (
     <span style={{ fontSize: 10.5, fontWeight: 700, padding: "2px 7px", background: "var(--status-risk-fill)", color: "var(--status-risk-text)", marginLeft: 8 }}>AGING</span>
   );
-  const linkBtn: React.CSSProperties = { padding: "4px 12px", fontSize: 12, fontWeight: 700, border: "1px solid var(--usapt-border-strong)", background: "#fff", color: "var(--usapt-ink)", textDecoration: "none" };
+  const linkBtn: React.CSSProperties = { padding: "4px 12px", fontSize: 12, fontWeight: 700, border: "1px solid var(--usapt-border-strong)", background: "var(--usapt-surface-raised)", color: "var(--usapt-ink)", textDecoration: "none" };
 
   const stats = [
     { label: "Offers awaiting reply", value: offerRows.length },
@@ -81,7 +81,7 @@ export default async function OffersPage() {
         referred out for a local working interview. Anything past its threshold is flagged so nothing stalls silently.
       </p>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 2, background: "var(--usapt-border)", border: "2px solid var(--usapt-border-strong)", marginBottom: 34 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 2, background: "var(--usapt-border)", border: "1px solid var(--usapt-border)", marginBottom: 34 }}>
         {stats.map((s) => (
           <div key={s.label} style={{ background: "var(--usapt-bg)", padding: "16px 16px 18px" }}>
             <div style={{ fontSize: 10, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--usapt-neutral-600)" }}>{s.label}</div>

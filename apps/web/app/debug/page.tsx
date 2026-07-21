@@ -15,7 +15,7 @@ export default async function DebugPage() {
   if (!isDemoMode()) notFound();
   const users = await listDemoUsers();
 
-  const card: React.CSSProperties = { border: "2px solid var(--usapt-border-strong)", background: "#fff", padding: 18, display: "flex", flexDirection: "column", gap: 10 };
+  const card: React.CSSProperties = { border: "1px solid var(--usapt-border)", background: "var(--usapt-surface-raised)", padding: 18, display: "flex", flexDirection: "column", gap: 10 };
 
   return (
     <div style={{ minHeight: "100vh", background: "var(--usapt-bg)", fontFamily: "var(--font-archivo), system-ui, sans-serif", color: "var(--usapt-ink)" }}>

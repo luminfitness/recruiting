@@ -25,14 +25,14 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
   });
 
   const maxCount = Math.max(1, ...funnel.stages.map((s) => s.count));
-  const selStyle: React.CSSProperties = { padding: "6px 8px", fontSize: 12, border: "1px solid var(--usapt-border)", background: "#fff" };
-  const th: React.CSSProperties = { textAlign: "left", fontSize: 10, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--usapt-text-muted)", padding: "8px 12px", borderBottom: "2px solid var(--usapt-border-strong)" };
+  const selStyle: React.CSSProperties = { padding: "6px 8px", fontSize: 12, border: "1px solid var(--usapt-border)", background: "var(--usapt-surface-raised)" };
+  const th: React.CSSProperties = { textAlign: "left", fontSize: 10, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--usapt-text-muted)", padding: "8px 12px", borderBottom: "1px solid var(--usapt-border)" };
   const td: React.CSSProperties = { padding: 12, borderBottom: "1px solid var(--usapt-border)", fontSize: 13, fontVariantNumeric: "tabular-nums" };
   const fmtMoney = (n: number) => `$${n.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
 
   return (
     <div style={{ padding: "34px 40px 60px" }}>
-      <div style={{ borderBottom: "2px solid var(--usapt-border-strong)", paddingBottom: 14 }}>
+      <div style={{ borderBottom: "1px solid var(--usapt-border)", paddingBottom: 14 }}>
         <div style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--usapt-brand-blue)" }}>
           Insight · live funnel
         </div>
@@ -61,7 +61,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
       </form>
 
       {/* Top stat tiles */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 2, background: "var(--usapt-border)", border: "2px solid var(--usapt-border-strong)", marginTop: 18 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 2, background: "var(--usapt-border)", border: "1px solid var(--usapt-border)", marginTop: 18 }}>
         {[
           { label: "Applicants", value: String(funnel.stages[0].count) },
           { label: "Offers", value: String(funnel.stages[4].count) },

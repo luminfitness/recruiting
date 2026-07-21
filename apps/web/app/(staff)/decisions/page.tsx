@@ -14,7 +14,7 @@ export default async function DecisionsPage() {
     textTransform: "uppercase",
     color: "var(--usapt-text-muted)",
     padding: "8px 12px",
-    borderBottom: "2px solid var(--usapt-border-strong)",
+    borderBottom: "1px solid var(--usapt-border)",
   };
   const td: React.CSSProperties = { padding: "12px", borderBottom: "1px solid var(--usapt-border)", fontSize: 13.5 };
 

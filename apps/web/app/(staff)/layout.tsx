@@ -2,10 +2,12 @@ import { redirect } from "next/navigation";
 import { requireUser, hasRole } from "@/lib/auth";
 import { isDemoMode } from "@/lib/demo";
 import { isFieldOnly, landingPathForRoles, primaryRoleLabel } from "@/lib/roles";
+import { getThemePref } from "@/lib/theme";
 import { Sidebar, type NavGroup } from "./Sidebar";
 
 export default async function StaffLayout({ children }: { children: React.ReactNode }) {
   const user = await requireUser();
+  const theme = await getThemePref();
 
   // Field-only roles get their own (field) app — never the operator console.
   if (isFieldOnly(user.roles)) redirect(landingPathForRoles(user.roles));
@@ -30,17 +32,22 @@ export default async function StaffLayout({ children }: { children: React.ReactN
     ] },
   ];
 
-  const settingsGroup: NavGroup | null = hasRole(user, "admin")
-    ? {
-        items: [
-          { label: "Organization", href: "/settings/organization" },
-          { label: "Integrations", href: "/settings/integrations" },
-          { label: "Cadence rules", href: "/settings/cadence-rules" },
-          { label: "Activity log", href: "/settings/activity" },
-          ...(isDemoMode() ? [{ label: "Message outbox", href: "/settings/outbox" }] : []),
-        ],
-      }
-    : null;
+  // Appearance is a per-user preference available to every staff member; the
+  // org-configuration screens below it stay admin-only.
+  const settingsGroup: NavGroup = {
+    items: [
+      { label: "Appearance", href: "/settings/appearance" },
+      ...(hasRole(user, "admin")
+        ? [
+            { label: "Organization", href: "/settings/organization" },
+            { label: "Integrations", href: "/settings/integrations" },
+            { label: "Cadence rules", href: "/settings/cadence-rules" },
+            { label: "Activity log", href: "/settings/activity" },
+            ...(isDemoMode() ? [{ label: "Message outbox", href: "/settings/outbox" }] : []),
+          ]
+        : []),
+    ],
+  };
 
   const initials = user.name
     .split(" ")
@@ -50,7 +57,7 @@ export default async function StaffLayout({ children }: { children: React.ReactN
     .toUpperCase();
 
   return (
-    <div style={{ display: "flex", height: "100vh", minHeight: 720, background: "var(--usapt-bg)", color: "var(--usapt-ink)" }}>
+    <div id="staff-shell" data-theme={theme} style={{ display: "flex", height: "100vh", minHeight: 720, background: "var(--usapt-bg)", color: "var(--usapt-ink)" }}>
       <Sidebar
         groups={groups}
         settingsGroup={settingsGroup}

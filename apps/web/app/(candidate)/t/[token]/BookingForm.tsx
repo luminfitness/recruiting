@@ -32,7 +32,7 @@ export function BookingForm({ token, sessions }: { token: string; sessions: Sess
                 justifyContent: "space-between",
                 padding: 14,
                 border: `2px solid ${isSel ? "var(--brand-primary)" : "var(--usapt-border)"}`,
-                background: isSel ? "var(--brand-tint)" : "#fff",
+                background: isSel ? "var(--brand-tint)" : "var(--usapt-surface-raised)",
                 cursor: s.full ? "not-allowed" : "pointer",
                 opacity: s.full ? 0.5 : 1,
               }}

@@ -13,7 +13,7 @@ export default async function CohortsPage() {
     return { cohorts, assignable };
   });
 
-  const inputStyle: React.CSSProperties = { padding: "8px 10px", fontSize: 13, border: "1px solid var(--usapt-border)", background: "#fff" };
+  const inputStyle: React.CSSProperties = { padding: "8px 10px", fontSize: 13, border: "1px solid var(--usapt-border)", background: "var(--usapt-surface-raised)" };
   const btn = (bg: string, fg: string): React.CSSProperties => ({ padding: "5px 10px", fontFamily: "inherit", fontWeight: 600, fontSize: 12, color: fg, background: bg, border: "1px solid var(--usapt-border)", cursor: "pointer" });
 
   return (
@@ -28,7 +28,7 @@ export default async function CohortsPage() {
       </p>
 
       <section style={{ marginBottom: 28 }}>
-        <h3 style={{ fontSize: 15, margin: "0 0 10px", borderBottom: "2px solid var(--usapt-border-strong)", paddingBottom: 8 }}>New cohort</h3>
+        <h3 style={{ fontSize: 15, margin: "0 0 10px", borderBottom: "1px solid var(--usapt-border)", paddingBottom: 8 }}>New cohort</h3>
         <form action={createCohortAction} style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
           <label style={{ fontSize: 12, color: "var(--usapt-text-muted)" }}>Orientation</label>
           <input name="orientationAt" type="datetime-local" required style={inputStyle} />
@@ -92,7 +92,7 @@ export default async function CohortsPage() {
                   </label>
                 ))}
               </div>
-              <button type="submit" style={{ ...btn("#fff", "var(--usapt-ink)"), fontWeight: 700 }}>Add selected</button>
+              <button type="submit" style={{ ...btn("var(--usapt-surface-raised)", "var(--usapt-ink)"), fontWeight: 700 }}>Add selected</button>
             </form>
           ) : null}
         </section>

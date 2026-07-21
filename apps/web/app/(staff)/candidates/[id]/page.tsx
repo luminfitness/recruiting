@@ -77,7 +77,7 @@ export default async function CandidateDetailPage({ params }: { params: Promise<
         → Candidate
       </div>
 
-      <div style={{ display: "flex", alignItems: "flex-start", gap: 16, borderBottom: "2px solid var(--usapt-border-strong)", paddingBottom: 16 }}>
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 16, borderBottom: "1px solid var(--usapt-border)", paddingBottom: 16 }}>
         <div
           style={{
             width: 52,
@@ -167,7 +167,7 @@ export default async function CandidateDetailPage({ params }: { params: Promise<
         const showManagerOffer = c.roleType === "manager" && ["awaiting_reply", "mia"].includes(c.status) && offer && !offer.response && !offer.retractedAt;
         if (!showManagerOffer) return null;
         return (
-          <div style={{ marginTop: 20, border: "2px solid var(--usapt-border-strong)", padding: 16 }}>
+          <div style={{ marginTop: 20, border: "1px solid var(--usapt-border)", padding: 16 }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
               <h4 style={{ fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--usapt-text-muted)", margin: 0 }}>
                 Manager offer — awaiting reply
@@ -192,7 +192,7 @@ export default async function CandidateDetailPage({ params }: { params: Promise<
                 </button>
               </form>
               <form action={resendOfferAction.bind(null, c.id)}>
-                <button type="submit" style={{ padding: "8px 14px", fontFamily: "inherit", fontWeight: 600, fontSize: 13, background: "#fff", border: "1px solid var(--usapt-border-strong)", cursor: "pointer" }}>
+                <button type="submit" style={{ padding: "8px 14px", fontFamily: "inherit", fontWeight: 600, fontSize: 13, background: "var(--usapt-surface-raised)", border: "1px solid var(--usapt-border-strong)", cursor: "pointer" }}>
                   Resend
                 </button>
               </form>
