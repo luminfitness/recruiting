@@ -19,9 +19,9 @@ export default async function CohortsPage() {
   return (
     <div style={{ padding: "34px 40px 60px", maxWidth: 900 }}>
       <div style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--usapt-brand-blue)" }}>
-        Classes &amp; cohorts
+        The funnel · step 5
       </div>
-      <h1 style={{ fontSize: 30, margin: "4px 0 6px" }}>Cohorts</h1>
+      <h1 style={{ fontSize: 30, margin: "4px 0 6px" }}>Classes</h1>
       <p style={{ fontSize: 13, color: "var(--usapt-text-muted)", marginBottom: 20, maxWidth: 620 }}>
         Group confirmed hires into a class, start the class, and track graduation. Post-hire status changes here flow
         straight into the live pipeline and analytics.

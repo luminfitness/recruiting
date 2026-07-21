@@ -34,9 +34,9 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
     <div style={{ padding: "34px 40px 60px" }}>
       <div style={{ borderBottom: "2px solid var(--usapt-border-strong)", paddingBottom: 14 }}>
         <div style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--usapt-brand-blue)" }}>
-          Live funnel · computed continuously
+          Insight · live funnel
         </div>
-        <h1 style={{ fontSize: 28, margin: "4px 0 0" }}>Recruiting analytics</h1>
+        <h1 style={{ fontSize: 28, margin: "4px 0 0" }}>Analytics</h1>
       </div>
 
       <form style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 16, flexWrap: "wrap" }}>

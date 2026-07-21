@@ -58,9 +58,9 @@ export default async function PipelinePage({ searchParams }: { searchParams: Pro
         <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
           <div>
             <div style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--usapt-brand-blue)" }}>
-              Live pipeline · Master Tracker replacement
+              Insight · master tracker
             </div>
-            <h1 style={{ fontSize: 30, margin: "4px 0 0" }}>Candidate pipeline</h1>
+            <h1 style={{ fontSize: 30, margin: "4px 0 0" }}>Pipeline</h1>
           </div>
           <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
             <div style={{ display: "flex", border: "1px solid var(--usapt-border-strong)" }}>

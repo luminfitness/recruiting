@@ -41,9 +41,9 @@ export default async function RosterIndexPage() {
   return (
     <div style={{ padding: "34px 40px 60px" }}>
       <div style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--usapt-brand-blue)" }}>
-        Interview sessions &amp; attendance
+        The funnel · step 2
       </div>
-      <h1 style={{ fontSize: 30, margin: "4px 0 20px" }}>Interview roster</h1>
+      <h1 style={{ fontSize: 30, margin: "4px 0 20px" }}>Interviews</h1>
 
       <section style={{ marginBottom: 32 }}>
         <h3 style={{ fontSize: 15, margin: "0 0 10px", borderBottom: "2px solid var(--usapt-border-strong)", paddingBottom: 8 }}>

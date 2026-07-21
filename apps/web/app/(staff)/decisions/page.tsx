@@ -21,9 +21,9 @@ export default async function DecisionsPage() {
   return (
     <div style={{ padding: "34px 40px 60px" }}>
       <div style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--usapt-brand-blue)" }}>
-        Decision queue · complete bundles
+        The funnel · step 3
       </div>
-      <h1 style={{ fontSize: 30, margin: "4px 0 6px" }}>Decision bundle</h1>
+      <h1 style={{ fontSize: 30, margin: "4px 0 6px" }}>Decisions</h1>
       <p style={{ fontSize: 13, color: "var(--usapt-text-muted)", marginBottom: 20 }}>
         Every candidate here has both halves in (grade + quiz). A disclosure shows only as a flag — open the bundle to
         review detail (access is logged). Disposition is always human.
