@@ -6,16 +6,12 @@ export default async function TmQueuePage() {
   const queue = await withUser((tx) => listNoShowQueue(tx));
 
   return (
-    <div style={{ minHeight: "100%", background: "var(--usapt-neutral-700)", padding: "28px 20px", display: "flex", flexDirection: "column", alignItems: "center" }}>
-      <div style={{ fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--usapt-neutral-300)", marginBottom: 12 }}>
-        Field · 390px · Territory manager
+    <div style={{ background: "var(--usapt-bg)", minHeight: "100%" }}>
+      <div style={{ background: "var(--usapt-brand-blue)", color: "#fff", padding: "16px 18px" }}>
+        <span style={{ fontSize: 13, fontWeight: 700 }}>No-show outreach</span>
+        <div style={{ fontSize: 11, color: "#9db4d6", marginTop: 8 }}>{queue.length} to reach · your territory</div>
       </div>
-      <div style={{ width: 390, maxWidth: "100%", background: "var(--usapt-bg)", boxShadow: "var(--usapt-shadow-lg)", display: "flex", flexDirection: "column" }}>
-        <div style={{ background: "var(--usapt-brand-blue)", color: "#fff", padding: "14px 18px" }}>
-          <span style={{ fontSize: 13, fontWeight: 700 }}>No-show outreach</span>
-          <div style={{ fontSize: 11, color: "#9db4d6", marginTop: 8 }}>{queue.length} to reach · your territory</div>
-        </div>
-        <div style={{ padding: 14, display: "flex", flexDirection: "column", gap: 12 }}>
+      <div style={{ padding: 14, display: "flex", flexDirection: "column", gap: 12 }}>
           {queue.map((c) => (
             <div key={c.candidateId} style={{ background: "#fff", border: "1px solid var(--usapt-border)", padding: 14 }}>
               <div style={{ fontSize: 16, fontWeight: 700 }}>{c.name}</div>
@@ -50,7 +46,6 @@ export default async function TmQueuePage() {
               No no-shows to work right now. When a candidate misses their session, they appear here for outreach.
             </div>
           ) : null}
-        </div>
       </div>
     </div>
   );

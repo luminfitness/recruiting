@@ -10,22 +10,22 @@ export async function createCohortAction(formData: FormData) {
   const classStartAt = String(formData.get("classStartAt") ?? "");
   if (!orientationAt || !classStartAt) return;
   await withUser((tx, _client, user) => createCohort(tx, user.orgId, { orientationAt: new Date(orientationAt), classStartAt: new Date(classStartAt) }));
-  revalidatePath("/cohorts");
+  revalidatePath("/classes");
 }
 
 export async function addMembersAction(cohortId: string, formData: FormData) {
   const ids = formData.getAll("candidateId").map(String).filter(Boolean);
   if (!ids.length) return;
   await withUser((tx) => addCohortMembers(tx, cohortId, ids));
-  revalidatePath("/cohorts");
+  revalidatePath("/classes");
 }
 
 export async function startClassAction(cohortId: string) {
   await withUser((tx, client, user) => startClass(tx, client, cohortId, user.userId));
-  revalidatePath("/cohorts");
+  revalidatePath("/classes");
 }
 
 export async function transitionMemberAction(candidateId: string, event: string) {
   await withUser((tx, client, user) => transitionMember(tx, client, candidateId, event as Parameters<typeof transitionMember>[3], user.userId));
-  revalidatePath("/cohorts");
+  revalidatePath("/classes");
 }

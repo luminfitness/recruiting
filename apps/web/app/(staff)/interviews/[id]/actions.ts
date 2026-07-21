@@ -9,14 +9,14 @@ export async function confirmPresentAction(sessionId: string, formData: FormData
   const candidateId = String(formData.get("candidateId") ?? "");
   if (!bookingId || !candidateId) return;
   await withUser((tx, client, user) => confirmPresent(tx, client, bookingId, candidateId, user.userId));
-  revalidatePath(`/roster/${sessionId}`);
+  revalidatePath(`/interviews/${sessionId}`);
 }
 
 export async function simulateDirectJoinAction(sessionId: string, formData: FormData) {
   const displayName = String(formData.get("displayName") ?? "").trim();
   if (!displayName) return;
   await withUser((tx, _client, user) => simulateDirectJoin(tx, user.orgId, sessionId, displayName));
-  revalidatePath(`/roster/${sessionId}`);
+  revalidatePath(`/interviews/${sessionId}`);
 }
 
 export async function confirmMatchAction(sessionId: string, formData: FormData) {
@@ -25,5 +25,5 @@ export async function confirmMatchAction(sessionId: string, formData: FormData) 
   const [bookingId, candidateId] = combined.split(":");
   if (!unmatchedId || !bookingId || !candidateId) return;
   await withUser((tx, client, user) => confirmUnmatchedMatch(tx, client, unmatchedId, bookingId, candidateId, user.userId));
-  revalidatePath(`/roster/${sessionId}`);
+  revalidatePath(`/interviews/${sessionId}`);
 }

@@ -12,12 +12,8 @@ export default async function LocalQueuePage() {
   const pending = queue.filter((q) => q.status === "referred_local" && !q.workingInterviewAt).length;
 
   return (
-    <div style={{ minHeight: "100%", background: "var(--usapt-neutral-700)", padding: "28px 20px", display: "flex", flexDirection: "column", alignItems: "center" }}>
-      <div style={{ fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--usapt-neutral-300)", marginBottom: 12 }}>
-        Field · 390px · Local manager
-      </div>
-      <div style={{ width: 390, maxWidth: "100%", background: "var(--usapt-bg)", boxShadow: "var(--usapt-shadow-lg)", display: "flex", flexDirection: "column" }}>
-        <div style={{ background: "var(--usapt-brand-blue)", color: "#fff", padding: "14px 18px" }}>
+    <div style={{ background: "var(--usapt-bg)", minHeight: "100%" }}>
+      <div style={{ background: "var(--usapt-brand-blue)", color: "#fff", padding: "16px 18px" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <span style={{ fontSize: 13, fontWeight: 700 }}>Trainer queue</span>
             <span style={{ fontSize: 12, color: "#cdd9ec" }}>{scope === "*" ? "All markets ▾" : `${scope.length} market(s) ▾`}</span>
@@ -81,7 +77,6 @@ export default async function LocalQueuePage() {
               interview.
             </div>
           ) : null}
-        </div>
       </div>
     </div>
   );

@@ -29,5 +29,5 @@ export async function becomeUserAction(userId: string) {
     path: "/",
     maxAge: SESSION_TTL_DAYS * 24 * 60 * 60,
   });
-  redirect("/dashboard");
+  redirect("/");
 }

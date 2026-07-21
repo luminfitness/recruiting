@@ -1,22 +1,47 @@
-import Link from "next/link";
+import { redirect } from "next/navigation";
 import { requireUser, hasRole } from "@/lib/auth";
 import { isDemoMode } from "@/lib/demo";
-
-const NAV_ITEMS = [
-  { href: "/dashboard", label: "Lead dashboard" },
-  { href: "/pipeline", label: "Pipeline · tracker" },
-  { href: "/decisions", label: "Decision bundle" },
-  { href: "/roster", label: "Interview roster" },
-  { href: "/postings", label: "Job postings" },
-  { href: "/cadence", label: "Posting cadence" },
-  { href: "/cohorts", label: "Classes & cohorts" },
-  { href: "/analytics", label: "Funnel analytics" },
-];
+import { isFieldOnly, landingPathForRoles, primaryRoleLabel } from "@/lib/roles";
+import { Sidebar, type NavGroup } from "./Sidebar";
 
 export default async function StaffLayout({ children }: { children: React.ReactNode }) {
   const user = await requireUser();
-  const showLocalQueue = hasRole(user, "local_manager");
-  const showTmQueue = hasRole(user, "territory_manager");
+
+  // Field-only roles get their own (field) app — never the operator console.
+  if (isFieldOnly(user.roles)) redirect(landingPathForRoles(user.roles));
+
+  // Funnel items are numbered by position so the sequence stays contiguous as
+  // screens land across build-steps. Bridge hrefs (→ existing routes) get
+  // repointed to the merged screens in later steps.
+  const funnelItems = [
+    { label: "Sourcing", href: "/postings" }, // → /sourcing (step 3)
+    { label: "Interviews", href: "/interviews" },
+    { label: "Decisions", href: "/decisions" },
+    { label: "Classes", href: "/classes" },
+  ].map((item, i) => ({ ...item, step: i + 1 }));
+
+  const groups: NavGroup[] = [
+    { items: [{ label: "Today", href: "/today" }] },
+    { header: "The funnel", items: funnelItems },
+    { header: "Insight", items: [
+      { label: "Pipeline", href: "/pipeline" },
+      { label: "Analytics", href: "/analytics" },
+    ] },
+  ];
+
+  const settingsGroup: NavGroup | null = hasRole(user, "admin")
+    ? {
+        items: [
+          { label: "Organization", href: "/admin" },
+          { label: "Integrations", href: "/settings/integrations" },
+          { label: "Cadence rules", href: "/cadence" },
+          { label: "Application intake", href: "/triage" },
+          { label: "Activity log", href: "/audit" },
+          ...(isDemoMode() ? [{ label: "Message outbox", href: "/outbox" }] : []),
+        ],
+      }
+    : null;
+
   const initials = user.name
     .split(" ")
     .map((p) => p[0])
@@ -26,152 +51,12 @@ export default async function StaffLayout({ children }: { children: React.ReactN
 
   return (
     <div style={{ display: "flex", height: "100vh", minHeight: 720, background: "var(--usapt-bg)", color: "var(--usapt-ink)" }}>
-      <aside
-        style={{
-          width: 236,
-          flex: "none",
-          display: "flex",
-          flexDirection: "column",
-          background: "var(--usapt-brand-blue)",
-          color: "var(--usapt-bg)",
-          borderRight: "2px solid #0a3271",
-        }}
-      >
-        <div style={{ background: "#fff", padding: "14px 18px 12px" }}>
-          <span style={{ fontFamily: "var(--font-archivo-black)", fontSize: 15, color: "var(--usapt-brand-blue)" }}>USA PT</span>
-        </div>
-        <div style={{ height: 3, background: "var(--usapt-brand-red)" }} />
-        <div style={{ padding: "12px 18px 10px", fontSize: 9, letterSpacing: "0.18em", textTransform: "uppercase", color: "#8fa8ce" }}>
-          Recruiting Operations
-        </div>
-        <div style={{ height: 2, background: "#0a3271" }} />
-        <nav style={{ flex: 1, overflowY: "auto", padding: "8px 0" }}>
-          <div style={{ padding: "14px 18px 6px", fontSize: 9, letterSpacing: "0.16em", textTransform: "uppercase", color: "#8fa8ce" }}>
-            Staff · Desktop
-          </div>
-          {NAV_ITEMS.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              style={{
-                display: "block",
-                padding: "9px 18px",
-                fontSize: 13.5,
-                fontWeight: 600,
-                borderLeft: "3px solid transparent",
-                color: "inherit",
-                textDecoration: "none",
-              }}
-            >
-              {item.label}
-            </Link>
-          ))}
-          {showLocalQueue ? (
-            <>
-              <div style={{ padding: "16px 18px 6px", fontSize: 9, letterSpacing: "0.16em", textTransform: "uppercase", color: "#8fa8ce" }}>
-                Field · Mobile
-              </div>
-              <Link
-                href="/local"
-                style={{ display: "block", padding: "9px 18px", fontSize: 13.5, fontWeight: 600, color: "inherit", textDecoration: "none" }}
-              >
-                Local manager queue
-              </Link>
-            </>
-          ) : null}
-          {showTmQueue ? (
-            <>
-              <div style={{ padding: "16px 18px 6px", fontSize: 9, letterSpacing: "0.16em", textTransform: "uppercase", color: "#8fa8ce" }}>
-                Field · Mobile
-              </div>
-              <Link
-                href="/tm"
-                style={{ display: "block", padding: "9px 18px", fontSize: 13.5, fontWeight: 600, color: "inherit", textDecoration: "none" }}
-              >
-                No-show outreach
-              </Link>
-            </>
-          ) : null}
-          {hasRole(user, "admin") ? (
-            <>
-              <div style={{ padding: "16px 18px 6px", fontSize: 9, letterSpacing: "0.16em", textTransform: "uppercase", color: "#8fa8ce" }}>
-                System
-              </div>
-              <Link
-                href="/admin"
-                style={{ display: "block", padding: "9px 18px", fontSize: 13.5, fontWeight: 600, color: "inherit", textDecoration: "none" }}
-              >
-                Org admin
-              </Link>
-              <Link
-                href="/settings/integrations"
-                style={{ display: "block", padding: "9px 18px", fontSize: 13.5, fontWeight: 600, color: "inherit", textDecoration: "none" }}
-              >
-                Integrations
-              </Link>
-              <Link
-                href="/triage"
-                style={{ display: "block", padding: "9px 18px", fontSize: 13.5, fontWeight: 600, color: "inherit", textDecoration: "none" }}
-              >
-                Application triage
-              </Link>
-              <Link
-                href="/audit"
-                style={{ display: "block", padding: "9px 18px", fontSize: 13.5, fontWeight: 600, color: "inherit", textDecoration: "none" }}
-              >
-                Audit log
-              </Link>
-              <Link
-                href="/outbox"
-                style={{ display: "block", padding: "9px 18px", fontSize: 13.5, fontWeight: 600, color: "inherit", textDecoration: "none" }}
-              >
-                Message outbox
-              </Link>
-            </>
-          ) : null}
-          {isDemoMode() ? (
-            <>
-              <div style={{ padding: "16px 18px 6px", fontSize: 9, letterSpacing: "0.16em", textTransform: "uppercase", color: "#8fa8ce" }}>Demo</div>
-              <Link href="/debug" style={{ display: "block", padding: "9px 18px", fontSize: 13.5, fontWeight: 700, color: "#ffd7d7", textDecoration: "none" }}>
-                ⚡ Switch user
-              </Link>
-            </>
-          ) : null}
-        </nav>
-        <div style={{ height: 2, background: "#0a3271" }} />
-        <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "14px 18px" }}>
-          <div
-            style={{
-              width: 30,
-              height: 30,
-              flex: "none",
-              background: "#0a3271",
-              color: "#fff",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 11,
-              fontWeight: 700,
-            }}
-          >
-            {initials}
-          </div>
-          <div style={{ lineHeight: 1.15, flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 12.5, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              {user.name}
-            </div>
-            <div style={{ fontSize: 10, color: "#8fa8ce" }}>{user.roles.join(" · ") || "No roles"}</div>
-          </div>
-          <form action="/auth/logout" method="post">
-            <button
-              type="submit"
-              style={{ background: "none", border: 0, color: "#8fa8ce", fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}
-            >
-              Sign out
-            </button>
-          </form>
-        </div>
-      </aside>
+      <Sidebar
+        groups={groups}
+        settingsGroup={settingsGroup}
+        identity={{ name: user.name, roleLabel: primaryRoleLabel(user.roles), initials }}
+        showSwitcher={isDemoMode()}
+      />
       <main style={{ flex: 1, minWidth: 0, overflowY: "auto" }}>{children}</main>
     </div>
   );

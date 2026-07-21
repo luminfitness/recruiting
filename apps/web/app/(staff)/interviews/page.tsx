@@ -93,7 +93,7 @@ export default async function RosterIndexPage() {
                 {s.booked} / {s.capacity}
               </td>
               <td style={{ ...td, textAlign: "right" }}>
-                <Link href={`/roster/${s.id}`} style={{ color: "var(--usapt-brand-blue)", fontWeight: 600, textDecoration: "none" }}>
+                <Link href={`/interviews/${s.id}`} style={{ color: "var(--usapt-brand-blue)", fontWeight: 600, textDecoration: "none" }}>
                   Open roster →
                 </Link>
               </td>
