@@ -26,5 +26,5 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     maxAge: SESSION_TTL_DAYS * 24 * 60 * 60,
   });
 
-  return NextResponse.redirect(new URL("/admin", request.url));
+  return NextResponse.redirect(new URL("/", request.url));
 }

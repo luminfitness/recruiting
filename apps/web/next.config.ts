@@ -11,6 +11,10 @@ const nextConfig: NextConfig = {
       { source: "/roster", destination: "/interviews", permanent: false },
       { source: "/roster/:id", destination: "/interviews/:id", permanent: false },
       { source: "/cohorts", destination: "/classes", permanent: false },
+      { source: "/admin", destination: "/settings/organization", permanent: false },
+      { source: "/cadence", destination: "/settings/cadence-rules", permanent: false },
+      { source: "/audit", destination: "/settings/activity", permanent: false },
+      { source: "/outbox", destination: "/settings/outbox", permanent: false },
     ];
   },
 };

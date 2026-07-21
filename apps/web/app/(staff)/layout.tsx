@@ -33,11 +33,11 @@ export default async function StaffLayout({ children }: { children: React.ReactN
   const settingsGroup: NavGroup | null = hasRole(user, "admin")
     ? {
         items: [
-          { label: "Organization", href: "/admin" },
+          { label: "Organization", href: "/settings/organization" },
           { label: "Integrations", href: "/settings/integrations" },
-          { label: "Cadence rules", href: "/cadence" },
-          { label: "Activity log", href: "/audit" },
-          ...(isDemoMode() ? [{ label: "Message outbox", href: "/outbox" }] : []),
+          { label: "Cadence rules", href: "/settings/cadence-rules" },
+          { label: "Activity log", href: "/settings/activity" },
+          ...(isDemoMode() ? [{ label: "Message outbox", href: "/settings/outbox" }] : []),
         ],
       }
     : null;

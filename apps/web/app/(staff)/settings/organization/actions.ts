@@ -25,7 +25,7 @@ export async function createBrandAction(formData: FormData) {
   await withRequestContext({ orgId: user.orgId, userId: user.userId, marketIds: "*" }, async (tx) => {
     await tx.insert(brands).values({ orgId: user.orgId, name, slug, replyIdentityName, replyIdentityEmail });
   });
-  revalidatePath("/admin");
+  revalidatePath("/settings/organization");
 }
 
 export async function createMarketAction(formData: FormData) {
@@ -38,7 +38,7 @@ export async function createMarketAction(formData: FormData) {
   await withRequestContext({ orgId: user.orgId, userId: user.userId, marketIds: "*" }, async (tx) => {
     await tx.insert(markets).values({ brandId, name, timezone });
   });
-  revalidatePath("/admin");
+  revalidatePath("/settings/organization");
 }
 
 export async function createUserAction(formData: FormData) {
@@ -52,7 +52,7 @@ export async function createUserAction(formData: FormData) {
     const [newUser] = await tx.insert(users).values({ orgId: user.orgId, name, email }).returning();
     await tx.insert(userRoles).values({ userId: newUser.id, orgId: user.orgId, role: role as (typeof userRoles.$inferInsert)["role"] });
   });
-  revalidatePath("/admin");
+  revalidatePath("/settings/organization");
 }
 
 /**
@@ -67,7 +67,7 @@ export async function deactivateUserAction(targetUserId: string) {
     await tx.update(users).set({ deactivatedAt: new Date() }).where(eq(users.id, targetUserId));
     await tx.insert(auditLog).values({ orgId: user.orgId, actorUserId: user.userId, action: "user_deactivated", resourceType: "user", resourceId: targetUserId, metadata: {} });
   });
-  revalidatePath("/admin");
+  revalidatePath("/settings/organization");
 }
 
 export async function reactivateUserAction(targetUserId: string) {
@@ -75,7 +75,7 @@ export async function reactivateUserAction(targetUserId: string) {
   await withRequestContext({ orgId: user.orgId, userId: user.userId, marketIds: "*" }, async (tx) => {
     await tx.update(users).set({ deactivatedAt: null }).where(eq(users.id, targetUserId));
   });
-  revalidatePath("/admin");
+  revalidatePath("/settings/organization");
 }
 
 /**
@@ -101,5 +101,5 @@ export async function assignMarketScopeAction(formData: FormData) {
       await tx.insert(userMarketScopes).values({ userRoleId: grant.id, marketId });
     }
   });
-  revalidatePath("/admin");
+  revalidatePath("/settings/organization");
 }

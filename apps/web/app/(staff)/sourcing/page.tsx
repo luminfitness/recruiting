@@ -226,7 +226,7 @@ export default async function SourcingPage({ searchParams }: { searchParams: Pro
           <h3 style={h3}>This week&rsquo;s ritual</h3>
           <p style={{ fontSize: 12.5, color: "var(--usapt-text-muted)", margin: "-2px 0 16px", maxWidth: 620 }}>
             The Sunday/Tuesday/Thursday cadence that fires automatically — no one has to remember it&rsquo;s Tuesday. To
-            change the schedule, edit the rules in <Link href="/cadence" style={{ color: "var(--usapt-brand-blue)" }}>Settings → Cadence rules</Link>.
+            change the schedule, edit the rules in <Link href="/settings/cadence-rules" style={{ color: "var(--usapt-brand-blue)" }}>Settings → Cadence rules</Link>.
           </p>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 2, background: "var(--usapt-border)", border: "2px solid var(--usapt-border-strong)" }}>
             {DAYS.map((day, i) => {

@@ -25,7 +25,8 @@ export function isFieldOnly(roles: string[]): boolean {
  * admins) go to Today; field-only users go straight to their queue.
  */
 export function landingPathForRoles(roles: string[]): string {
-  if (isOperator(roles) || isAdmin(roles)) return "/today";
+  if (isOperator(roles)) return "/today";
+  if (isAdmin(roles)) return "/settings";
   if (roles.includes("local_manager")) return "/local";
   if (roles.includes("territory_manager")) return "/tm";
   return "/today";
