@@ -3,6 +3,11 @@ import { StatusPill } from "@usapt/design-tokens";
 import { isDemoMode, listDemoUsers } from "@/lib/demo";
 import { becomeUserAction } from "./actions";
 
+// Demo-only, DB-backed, and — unlike every other page — it reads no cookies, so
+// Next would otherwise try to statically prerender it at build time and hit the
+// service DB (which isn't provisioned during the build). Render it per-request.
+export const dynamic = "force-dynamic";
+
 const ROLE_BLURB: Record<string, string> = {
   admin: "Everything — org config, users, integrations, audit",
   recruiting_lead: "Full pipeline, cadence, decisions, offers, analytics",
