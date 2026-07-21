@@ -115,7 +115,7 @@ export default async function TodayPage() {
         : `${offersAwaiting} offer${plural(offersAwaiting)} awaiting reply`,
       detail: offersAging ? "No reply past the 5-day threshold — nudge the candidate" : "Manager offers with no response yet",
       cta: "Nudge",
-      href: "/pipeline",
+      href: "/offers",
     });
   }
   if (referralsAging) {
@@ -125,7 +125,7 @@ export default async function TodayPage() {
       title: `${referralsAging} referral${plural(referralsAging)} stale`,
       detail: "No local working-interview outcome past the threshold",
       cta: "Follow up",
-      href: "/pipeline",
+      href: "/offers",
     });
   }
 

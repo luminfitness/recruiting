@@ -17,6 +17,7 @@ export default async function StaffLayout({ children }: { children: React.ReactN
     { label: "Sourcing", href: "/sourcing" },
     { label: "Interviews", href: "/interviews" },
     { label: "Decisions", href: "/decisions" },
+    { label: "Offers & hiring", href: "/offers" },
     { label: "Classes", href: "/classes" },
   ].map((item, i) => ({ ...item, step: i + 1 }));
 
