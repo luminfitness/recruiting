@@ -91,7 +91,7 @@ async function main() {
     await db.insert(schema.quizDefinitions).values({ orgId: org.id, roleType, version: 1, schema: QUIZ_V1[roleType], active: true });
   }
 
-  console.log(`Seeded org ${org.slug} (${org.id}) with admin ${admin.email} + v1 criteria/quiz`);
+  console.log(`Seeded org ${org.slug} (${org.id}) with admin ${marc.email} + v1 criteria/quiz`);
   await pool.end();
 }
 
