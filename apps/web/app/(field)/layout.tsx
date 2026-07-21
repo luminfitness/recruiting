@@ -1,4 +1,7 @@
+import { inArray } from "drizzle-orm";
+import { markets } from "@usapt/db/schema";
 import { requireUser } from "@/lib/auth";
+import { withUser } from "@/lib/db-context";
 import { primaryRoleLabel } from "@/lib/roles";
 
 /**
@@ -10,13 +13,25 @@ export default async function FieldLayout({ children }: { children: React.ReactN
   const user = await requireUser();
   const roleLabel = primaryRoleLabel(user.roles);
 
+  // Resolve the user's scoped market name(s) for the header — the field app is
+  // "their market", so name it.
+  const marketNames = await withUser(async (tx, _client, u) => {
+    if (u.marketIds === "*" || u.marketIds.length === 0) return [] as string[];
+    const rows = await tx.select({ name: markets.name }).from(markets).where(inArray(markets.id, u.marketIds));
+    return rows.map((r) => r.name);
+  });
+  const marketLabel = marketNames.join(" · ");
+
   return (
     <div style={{ minHeight: "100vh", background: "var(--usapt-surface)", color: "var(--usapt-ink)", display: "flex", flexDirection: "column" }}>
       <header style={{ position: "sticky", top: 0, zIndex: 10, background: "#fff", borderBottom: "2px solid var(--usapt-brand-red)" }}>
         <div style={{ maxWidth: 460, margin: "0 auto", padding: "12px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
             <span style={{ fontFamily: "var(--font-archivo-black)", fontSize: 15, color: "var(--usapt-brand-blue)" }}>USA PT</span>
-            <span style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--usapt-text-muted)" }}>{roleLabel}</span>
+            <span style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--usapt-text-muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {roleLabel}
+              {marketLabel ? <span style={{ color: "var(--usapt-brand-red)" }}> · {marketLabel}</span> : null}
+            </span>
           </div>
           <form action="/auth/logout" method="post">
             <button

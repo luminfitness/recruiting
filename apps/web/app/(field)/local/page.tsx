@@ -4,20 +4,14 @@ import { listLocalQueue } from "@/lib/referrals";
 import { recordLocalOutcomeAction, scheduleWorkingInterviewAction } from "./actions";
 
 export default async function LocalQueuePage() {
-  const { queue, scope } = await withUser(async (tx, _client, user) => {
-    const queue = await listLocalQueue(tx);
-    return { queue, scope: user.marketIds };
-  });
+  const queue = await withUser((tx) => listLocalQueue(tx));
 
   const pending = queue.filter((q) => q.status === "referred_local" && !q.workingInterviewAt).length;
 
   return (
     <div style={{ background: "var(--usapt-bg)", minHeight: "100%" }}>
       <div style={{ background: "var(--usapt-brand-blue)", color: "#fff", padding: "16px 18px" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <span style={{ fontSize: 13, fontWeight: 700 }}>Trainer queue</span>
-            <span style={{ fontSize: 12, color: "#cdd9ec" }}>{scope === "*" ? "All markets ▾" : `${scope.length} market(s) ▾`}</span>
-          </div>
+          <span style={{ fontSize: 13, fontWeight: 700 }}>Trainer queue</span>
           <div style={{ fontSize: 11, color: "#9db4d6", marginTop: 8 }}>{pending} awaiting your outcome · your market only</div>
         </div>
 
