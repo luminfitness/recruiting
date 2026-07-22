@@ -65,7 +65,7 @@ export function Sidebar({
     >
       <div style={{ display: "flex", flexDirection: "column", gap: 6, padding: "18px 18px 14px" }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/usa-pt-logo.webp" alt="USA Personal Training" style={{ height: 46, width: "auto", display: "block" }} />
+        <img src="/usa-pt-logo.webp" alt="USA Personal Training" style={{ height: 46, width: "auto", alignSelf: "flex-start", display: "block" }} />
         <span style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--usapt-text-faint)", paddingLeft: 2 }}>
           Recruiting
         </span>
