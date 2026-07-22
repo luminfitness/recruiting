@@ -27,7 +27,8 @@ export default async function FieldLayout({ children }: { children: React.ReactN
       <header style={{ position: "sticky", top: 0, zIndex: 10, background: "var(--usapt-surface-raised)", borderBottom: "1px solid var(--usapt-border)" }}>
         <div style={{ maxWidth: 460, margin: "0 auto", padding: "12px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 9, minWidth: 0 }}>
-            <span style={{ width: 24, height: 24, flex: "none", borderRadius: 7, background: "var(--usapt-brand-blue)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800 }}>U</span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/usa-pt-logo.webp" alt="USA Personal Training" style={{ height: 26, width: "auto", flex: "none", display: "block" }} />
             <span style={{ fontSize: 11, letterSpacing: "0.07em", textTransform: "uppercase", fontWeight: 700, color: "var(--usapt-text-muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               {roleLabel}
               {marketLabel ? <span style={{ color: "var(--usapt-brand-ink)" }}> · {marketLabel}</span> : null}
