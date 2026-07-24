@@ -1,4 +1,4 @@
-import { boolean, date, integer, jsonb, numeric, pgTable, text, time, timestamp, uuid } from "drizzle-orm/pg-core";
+import { boolean, date, integer, jsonb, numeric, pgTable, text, time, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
 import { organizations, brands, markets } from "./tenancy";
 import {
   cadenceActionEnum,
@@ -8,6 +8,35 @@ import {
   postingStatusEnum,
   roleTypeEnum,
 } from "./enums";
+
+/**
+ * Per-brand, per-role posting package: the scheduling link and contact number
+ * that go out on an ad for that brand's manager or trainer opening.
+ *
+ * Keyed on (brand, role) precisely so the FRD Section 8 invariant survives
+ * configuration — resolveRolePackage() looks both fields up together under one
+ * role_type, so a trainer ad still cannot pick up the manager line no matter
+ * what an admin types. Null columns fall back to the derived defaults.
+ */
+export const brandRoleSettings = pgTable(
+  "brand_role_settings",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    orgId: uuid("org_id")
+      .notNull()
+      .references(() => organizations.id, { onDelete: "cascade" }),
+    brandId: uuid("brand_id")
+      .notNull()
+      .references(() => brands.id, { onDelete: "cascade" }),
+    roleType: roleTypeEnum("role_type").notNull(),
+    /** Public phone number printed on the ad. Null → the built-in default. */
+    contactNumber: text("contact_number"),
+    /** Overrides the derived /apply/{slug}?role=… link. Null → derived. */
+    schedulingLink: text("scheduling_link"),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("brand_role_settings_brand_role_idx").on(t.brandId, t.roleType)],
+);
 
 /** Versioned; job_postings.copy_snapshot freezes resolved text so an edit never retroactively changes a scheduled instance. */
 export const copyTemplates = pgTable("copy_templates", {

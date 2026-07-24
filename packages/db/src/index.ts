@@ -2,3 +2,4 @@ export * from "./client";
 export * as schema from "./schema";
 export * from "./schema";
 export * from "./eval-config";
+export * from "./posting-copy";

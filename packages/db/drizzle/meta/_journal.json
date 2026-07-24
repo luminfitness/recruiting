@@ -64,6 +64,13 @@
       "when": 1784910287729,
       "tag": "0008_bizarre_jack_flag",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1784910288729,
+      "tag": "0009_brand_role_settings",
+      "breakpoints": true
     }
   ]
 }

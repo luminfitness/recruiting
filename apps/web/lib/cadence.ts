@@ -4,6 +4,7 @@ import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import type * as dbSchema from "@usapt/db/schema";
 import {
   auditLog,
+  brandRoleSettings,
   brands,
   cadenceRuleOverrides,
   cadenceRules,
@@ -12,6 +13,7 @@ import {
   markets,
   organizations,
 } from "@usapt/db/schema";
+import { defaultPostingCopy, renderPostingCopy } from "@usapt/db";
 import { getProvider } from "@usapt/core";
 
 type Tx = NodePgDatabase<typeof dbSchema>;
@@ -41,17 +43,48 @@ export function rolePackage(baseUrl: string, brandSlug: string, roleType: RoleTy
   };
 }
 
+/**
+ * The same package, with the brand's own configured link/number layered over
+ * the defaults (Settings → Postings). The lookup is keyed on (brand, role) and
+ * returns BOTH fields together — so the invariant above survives configuration:
+ * there is still no path that pairs a manager link with a trainer posting,
+ * whatever an admin types into either field.
+ */
+export async function resolveRolePackage(
+  tx: Tx,
+  brandId: string,
+  brandSlug: string,
+  roleType: RoleType,
+): Promise<{ schedulingLink: string; contactNumber: string }> {
+  const baseUrl = process.env.APP_BASE_URL ?? "http://localhost:3000";
+  const fallback = rolePackage(baseUrl, brandSlug, roleType);
+  const [cfg] = await tx
+    .select()
+    .from(brandRoleSettings)
+    .where(and(eq(brandRoleSettings.brandId, brandId), eq(brandRoleSettings.roleType, roleType)));
+  return {
+    schedulingLink: cfg?.schedulingLink?.trim() || fallback.schedulingLink,
+    contactNumber: cfg?.contactNumber?.trim() || fallback.contactNumber,
+  };
+}
+
 async function resolveCopy(tx: Tx, orgId: string, brandId: string, roleType: RoleType, channel: Channel, copyTemplateId: string | null): Promise<string> {
   if (copyTemplateId) {
     const [t] = await tx.select().from(copyTemplates).where(eq(copyTemplates.id, copyTemplateId));
     if (t) return t.body;
   }
-  const [t] = await tx
+  // Most specific first: this brand+role+channel, then this brand+role on ANY
+  // channel (Settings → Postings edits one default per role rather than one per
+  // channel, so a LinkedIn posting still picks up the brand's own language),
+  // then the shipped default so a posting is never published as a bare line.
+  const forRole = await tx
     .select()
     .from(copyTemplates)
-    .where(and(eq(copyTemplates.orgId, orgId), eq(copyTemplates.brandId, brandId), eq(copyTemplates.roleType, roleType), eq(copyTemplates.channel, channel)))
+    .where(and(eq(copyTemplates.orgId, orgId), eq(copyTemplates.brandId, brandId), eq(copyTemplates.roleType, roleType)))
     .orderBy(desc(copyTemplates.version));
-  return t?.body ?? `${roleType === "manager" ? "Manager" : "Personal Trainer"} opening — apply today!`;
+
+  const exact = forRole.find((t) => t.channel === channel);
+  return exact?.body ?? forRole[0]?.body ?? defaultPostingCopy(roleType);
 }
 
 export interface CreatePostingInput {
@@ -78,9 +111,20 @@ export interface CreatePostingInput {
  */
 export async function createPosting(tx: Tx, input: CreatePostingInput): Promise<string> {
   const [brand] = await tx.select().from(brands).where(eq(brands.id, input.brandId));
-  const baseUrl = process.env.APP_BASE_URL ?? "http://localhost:3000";
-  const pkg = rolePackage(baseUrl, brand?.slug ?? "brand", input.roleType);
-  const copy = await resolveCopy(tx, input.orgId, input.brandId, input.roleType, input.channel, input.copyTemplateId ?? null);
+  const pkg = await resolveRolePackage(tx, input.brandId, brand?.slug ?? "brand", input.roleType);
+  const template = await resolveCopy(tx, input.orgId, input.brandId, input.roleType, input.channel, input.copyTemplateId ?? null);
+
+  // Substitute {{placeholders}} BEFORE snapshotting, so copy_snapshot holds the
+  // exact text that went out — link and number included.
+  const [market] = input.marketId
+    ? await tx.select().from(markets).where(eq(markets.id, input.marketId))
+    : [undefined];
+  const copy = renderPostingCopy(template, {
+    brand: brand?.name,
+    market: market?.name,
+    schedulingLink: pkg.schedulingLink,
+    contactNumber: pkg.contactNumber,
+  });
 
   const provider =
     input.channel === "linkedin"

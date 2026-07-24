@@ -86,7 +86,33 @@ Source chip on kanban cards; Classes status chips (Completed / In Progress / Upc
 In-Class vs Graduated split; inline role dropdown on Team. (Per-track phone/scheduling metadata
 needs a small migration — split out.)
 
-### H. Public application form — L (~3–5d + design pass) — **migration + RLS**
+### H. Public application form — ✅ SHIPPED (pulled ahead of Wave 3)
+
+Pulled forward because the ads we already publish pointed at `/apply/{brandSlug}`,
+which did not exist — every live posting linked to a 404. Built as
+`/apply/[brandSlug]?role=…&src=…`: brand-themed, mobile-first, no account.
+Runs through `withServiceTransaction` (no session ⇒ no RLS), so the guarantees
+live in `lib/public-apply.ts`: orgId is derived from the brand slug and never
+taken from the request, the market is verified to belong to that brand, input is
+length-capped and shape-checked, a honeypot submission is accepted silently, and
+the response is identical whether or not the person already exists (no
+"is this email in your system" oracle). Rate limiting is in-memory — a speed
+bump, not a defence; a shared store or edge rule is the durable answer.
+
+Also shipped alongside: **Settings → Postings** — per-brand, per-role default ad
+language with `{{brand}} {{market}} {{scheduling_link}} {{contact_number}}`
+placeholders, plus the scheduling link and contact number moved out of hardcoded
+constants into `brand_role_settings`. The role-correct pairing invariant is
+preserved: `resolveRolePackage()` looks link and number up together keyed on
+role, so a trainer ad still cannot carry the manager line.
+
+Still open from the original scope: resume upload, and a `career_site` source
+value (public applications currently record `source = other` unless the ad link
+carries `?src=`).
+
+<details><summary>Original estimate</summary>
+
+L (~3–5d + design pass) — **migration + RLS**
 The only strategically important gap. Public unauthenticated route → shared
 `createOrMergeCandidate` extracted from `lib/ingestion.ts` (dedupe by email/phone within org) →
 the same downstream automation as an ingested applicant. Also needs a **job/role entity**: today
@@ -96,6 +122,8 @@ service-role insert with strict validation, a deliberate RLS carve-out, and spam
 (honeypot + rate limit; optional captcha widget).
 **Open: resume upload y/n; one form per job or per org; behaviour on duplicate application.**
 **Should get a short design doc before code.**
+
+</details>
 
 ---
 
