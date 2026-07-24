@@ -17,7 +17,9 @@ through the real state machine. Nothing is mocked.
 - Optional: **Settings → Appearance → Dark** if the room's projector is dim.
 
 **Frame it up front, in one line:**
-> "Today this runs on a spreadsheet and a lot of people remembering things. I want to show you the same week, run by a system — and I'll follow one real applicant all the way from the ad to a graduate."
+> "Today this runs on a spreadsheet and a lot of people remembering things.
+I want to show you the same week, run by a system — and I'll follow one real applicant 
+all the way from the ad to a graduate."
 
 ---
 
@@ -34,7 +36,8 @@ through the real state machine. Nothing is mocked.
 ## 2 · A prospect lands, and the invite is already out — *Pipeline*
 
 - Applicant arrives from Indeed and lands in one tracker, **source attached**.
-- The group-interview invitation went out **automatically, on arrival** — which is why they're already at *Invited*, not sitting in a queue.
+- The group-interview invitation went out **automatically, on arrival** — which is why they're 
+already at *Invited*, not sitting in a queue.
 - One board, both tracks (manager + trainer), filterable by brand, market, source, cohort.
 
 > "That's the difference between a tracker and a system — nobody had to remember to send it."
@@ -82,7 +85,7 @@ through the real state machine. Nothing is mocked.
 
 - Choose **Offer**.
 
-**If they ask about disclosures:** a felony disclosure is shown to the decision-maker, is access-logged, and **never scores and never generates a suggestion** — those go to a person to decide directly. Deliberate: automating that decision is exactly what regulators warn against.
+**If they ask about disclosures:** the candidate has to answer the background question explicitly — nothing is pre-filled on their behalf, so what's on file is a statement they actually made. It's shown to the decision-maker, access-logged, and **never scores and never generates a suggestion** — those go to a person to decide directly. Deliberate: automating that decision is exactly what regulators warn against.
 
 ## 8 · Offer out, answer in — *Candidate record*
 
@@ -127,8 +130,8 @@ through the real state machine. Nothing is mocked.
 | "Does it decide who to hire?" | No. It recommends and records; a person decides. That's a deliberate design choice, and it's what keeps you defensible. |
 | "What about multiple locations/brands?" | Built in from day one — brands, markets, and per-market access scoping. A territory manager only sees their territory. |
 | "Can trainers go through a different path?" | Yes — trainers route to a local manager for a working interview. Different path, same tracker. (Offer to show the field app.) |
-| "Where does the data come from?" | Job boards, inbound email parsing, CSV import, and manual entry today. A public application form is the next build. |
-| "Is this live?" | It's a working demo on real infrastructure. Production hardening and the public apply form are the next phase. |
+| "Where does the data come from?" | Four ways in: the public application form your ads link to, job boards, inbound email parsing, and CSV import (plus manual entry). All land in the same tracker with the source attached. |
+| "Is this live?" | It's a working demo on real infrastructure — real database, real application form. Production hardening is the next phase. |
 
 ## Don't demo
 

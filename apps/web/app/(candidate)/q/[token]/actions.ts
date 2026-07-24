@@ -14,10 +14,12 @@ function parsePayload(formData: FormData) {
     if (k.startsWith("avail_")) availability[k.slice(6)] = true;
   }
   const writtenResponse = String(formData.get("writtenResponse") ?? "").trim();
-  const hasDisclosure = String(formData.get("hasDisclosure") ?? "") === "yes";
+  // Kept RAW here. An unanswered disclosure must not collapse into "no" —
+  // that would record a criminal-history attestation the candidate never made.
+  // The final submit validates it; drafts never persist it (see below).
+  const rawDisclosure = String(formData.get("hasDisclosure") ?? "");
   const detail = String(formData.get("disclosureDetail") ?? "").trim();
-  const felonyDisclosure = hasDisclosure ? { hasDisclosure: true, detail } : { hasDisclosure: false };
-  return { answers, availability, writtenResponse, felonyDisclosure };
+  return { answers, availability, writtenResponse, rawDisclosure, detail };
 }
 
 async function withCandidate<T>(token: string, fn: (ctx: { orgId: string; id: string; roleType: "manager" | "trainer" }, tx: Parameters<Parameters<typeof withServiceTransaction>[0]>[0], client: Parameters<Parameters<typeof withServiceTransaction>[0]>[1]) => Promise<T>): Promise<T> {
@@ -34,14 +36,33 @@ async function withCandidate<T>(token: string, fn: (ctx: { orgId: string; id: st
  * the client component's step state. The final submit is what re-renders.
  */
 export async function saveQuizProgressAction(token: string, formData: FormData) {
-  const { answers, availability, writtenResponse, felonyDisclosure } = parsePayload(formData);
+  const { answers, availability, writtenResponse } = parsePayload(formData);
   await withCandidate(token, (c, tx, client) =>
-    submitQuizIntake(tx, client, c.orgId, c.id, c.roleType, { answers, availability, writtenResponse, felonyDisclosure, draft: true }),
+    submitQuizIntake(tx, client, c.orgId, c.id, c.roleType, {
+      answers,
+      availability,
+      writtenResponse,
+      // Ignored on the draft path — submitQuizIntake only writes
+      // felony_disclosure on a final submit, so a part-finished wizard never
+      // records an answer to a question the candidate hasn't reached yet.
+      felonyDisclosure: { hasDisclosure: false },
+      draft: true,
+    }),
   );
 }
 
 export async function submitQuizIntakeAction(token: string, formData: FormData) {
-  const { answers, availability, writtenResponse, felonyDisclosure } = parsePayload(formData);
+  const { answers, availability, writtenResponse, rawDisclosure, detail } = parsePayload(formData);
+
+  // Backstop behind the required radios: only an explicit answer counts. A
+  // missing field is a refusal to record, never an implied "no convictions".
+  // (A "use server" module may only export async functions, so this is a plain
+  // throw rather than a named error class.)
+  if (rawDisclosure !== "yes" && rawDisclosure !== "no") {
+    throw new Error("Please answer the background disclosure question before submitting.");
+  }
+  const felonyDisclosure = rawDisclosure === "yes" ? { hasDisclosure: true, detail } : { hasDisclosure: false };
+
   await withCandidate(token, (c, tx, client) =>
     submitQuizIntake(tx, client, c.orgId, c.id, c.roleType, { answers, availability, writtenResponse, felonyDisclosure, draft: false }),
   );

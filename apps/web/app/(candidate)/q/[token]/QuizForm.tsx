@@ -19,6 +19,8 @@ export interface QuizFormProps {
 export function QuizForm({ token, quiz, initialAnswers, initialWritten, initialAvailability }: QuizFormProps) {
   const steps = ["Knowledge check", "About you", "Availability", "Disclosures"];
   const [step, setStep] = useState(0);
+  /** "" until the candidate actually answers — never defaulted to "no". */
+  const [disclosure, setDisclosure] = useState<"" | "no" | "yes">("");
   const [, startTransition] = useTransition();
   const formRef = useRef<HTMLFormElement>(null);
   const submit = submitQuizIntakeAction.bind(null, token);
@@ -119,20 +121,44 @@ export function QuizForm({ token, quiz, initialAnswers, initialWritten, initialA
             Do you have any criminal convictions to disclose? A disclosure never automatically disqualifies you — every
             decision is made by a person, and this is reviewed confidentially.
           </p>
+          {/* No pre-selected answer: this is an attestation about criminal
+              history, so the candidate has to make the statement themselves.
+              `required` is safe here because this step is visible whenever the
+              submit button exists — a required control inside a hidden step
+              would block submission with nothing focusable to point at. */}
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             <label style={{ display: "flex", gap: 8, fontSize: 13.5, alignItems: "center" }}>
-              <input type="radio" name="hasDisclosure" value="no" defaultChecked /> Nothing to disclose
+              <input
+                type="radio"
+                name="hasDisclosure"
+                value="no"
+                required
+                checked={disclosure === "no"}
+                onChange={() => setDisclosure("no")}
+              />{" "}
+              Nothing to disclose
             </label>
             <label style={{ display: "flex", gap: 8, fontSize: 13.5, alignItems: "center" }}>
-              <input type="radio" name="hasDisclosure" value="yes" /> I have something to disclose
+              <input
+                type="radio"
+                name="hasDisclosure"
+                value="yes"
+                required
+                checked={disclosure === "yes"}
+                onChange={() => setDisclosure("yes")}
+              />{" "}
+              I have something to disclose
             </label>
           </div>
-          <textarea
-            name="disclosureDetail"
-            placeholder="Optional detail / context"
-            rows={3}
-            style={{ width: "100%", marginTop: 10, padding: "10px 12px", fontSize: 14, border: "1px solid var(--usapt-border)", fontFamily: "inherit" }}
-          />
+          {disclosure === "yes" ? (
+            <textarea
+              name="disclosureDetail"
+              required
+              placeholder="Please tell us briefly what you'd like us to know"
+              rows={3}
+              style={{ width: "100%", marginTop: 10, padding: "10px 12px", fontSize: 14, border: "1px solid var(--usapt-border)", fontFamily: "inherit" }}
+            />
+          ) : null}
         </div>
 
         {/* Nav */}
