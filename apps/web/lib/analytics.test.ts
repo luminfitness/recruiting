@@ -7,7 +7,7 @@ import { eq } from "drizzle-orm";
 import { Pool, type PoolClient } from "pg";
 import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
 import * as schema from "@usapt/db/schema";
-import { computeFunnel } from "./analytics";
+import { computeFunnel, weeklyTrend } from "./analytics";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const envPath = resolve(__dirname, "../../../.env.local");
@@ -78,6 +78,19 @@ run("funnel analytics", () => {
       client.release();
     }
   }
+
+  it("weeklyTrend lands this week's offers and starts in the latest bucket", async () => {
+    // Regression guard: date_trunc('week', timestamptz) truncates in the DB
+    // session timezone, so a midnight-UTC bucket key silently matched nothing
+    // and the chart read "no data" forever. Buckets are keyed in UTC now.
+    const trend = await tx((_t, client) => weeklyTrend(client, {}, 8));
+    expect(trend).toHaveLength(8);
+    expect(trend.reduce((n, p) => n + p.offers, 0)).toBe(1);
+    expect(trend.reduce((n, p) => n + p.starts, 0)).toBe(1);
+    // history was written "now", so it belongs to the most recent bucket
+    expect(trend[trend.length - 1].offers).toBe(1);
+    expect(trend[trend.length - 1].starts).toBe(1);
+  });
 
   it("counts each funnel stage by furthest status reached", async () => {
     const funnel = await tx((t, client) => computeFunnel(t, client, {}));

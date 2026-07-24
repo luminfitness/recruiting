@@ -30,7 +30,7 @@ describe("CSV parser (pure)", () => {
 describe("pipelineToCsv", () => {
   it("emits a header and never a felony column", () => {
     const csv = pipelineToCsv([
-      { id: "x", name: "A B", roleType: "trainer", source: "indeed", status: "graduated", brandName: "Br", marketName: "Mk", gradeText: "18/20", quizText: "80%", appliedAt: new Date("2025-01-01"), ageDays: 10 },
+      { id: "x", name: "A B", email: "a.b@example.com", roleType: "trainer", source: "indeed", status: "graduated", brandName: "Br", marketName: "Mk", gradeText: "18/20", quizText: "80%", appliedAt: new Date("2025-01-01"), ageDays: 10 },
     ]);
     expect(csv.split("\n")[0]).toContain("Name");
     expect(csv.toLowerCase()).not.toContain("felony");
@@ -115,5 +115,30 @@ Bianca,Cole,b.cole.${randomBytes(3).toString("hex")}@x.com,Trainer,Crunch Fitnes
   it("getPipeline filters by role", async () => {
     const rows = await tx((t) => getPipeline(t, { role: "trainer" }));
     expect(rows.every((r) => r.roleType === "trainer")).toBe(true);
+  });
+
+  it("getPipeline q searches name, full name and email, case-insensitively", async () => {
+    const all = await tx((t) => getPipeline(t, {}));
+    expect(all.length).toBeGreaterThan(0);
+    const target = all[0];
+    const [first, ...rest] = target.name.split(" ");
+
+    // first name, lowercased — should still match
+    const byFirst = await tx((t) => getPipeline(t, { q: first.toLowerCase() }));
+    expect(byFirst.some((r) => r.id === target.id)).toBe(true);
+
+    // full "first last" spans two columns — the concat branch covers it
+    if (rest.length) {
+      const byFull = await tx((t) => getPipeline(t, { q: target.name.toUpperCase() }));
+      expect(byFull.some((r) => r.id === target.id)).toBe(true);
+    }
+
+    // email
+    const byEmail = await tx((t) => getPipeline(t, { q: target.email }));
+    expect(byEmail.some((r) => r.id === target.id)).toBe(true);
+
+    // a string nobody matches
+    const none = await tx((t) => getPipeline(t, { q: "zzz-no-such-candidate-zzz" }));
+    expect(none).toHaveLength(0);
   });
 });

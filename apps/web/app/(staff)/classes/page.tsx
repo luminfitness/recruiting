@@ -38,12 +38,33 @@ export default async function CohortsPage() {
         </form>
       </section>
 
-      {cohorts.map((c) => (
+      {cohorts.map((c) => {
+        // Cohort phase, derived from where its members actually are — not a
+        // stored field, so it can never drift from the members' real statuses.
+        const inClass = c.members.filter((m) => m.status === "in_class").length;
+        const graduated = c.members.filter((m) => ["graduated", "graduated_inactive"].includes(m.status)).length;
+        const settled = ["graduated", "graduated_inactive", "never_started", "quit_during_class", "quit_after_orientation"];
+        const phase =
+          c.members.length > 0 && c.members.every((m) => settled.includes(m.status))
+            ? { label: "Completed", fill: "var(--status-positive-fill)", fg: "var(--status-positive-text)" }
+            : inClass > 0
+              ? { label: "In progress", fill: "var(--status-motion-fill)", fg: "var(--status-motion-text)" }
+              : { label: "Upcoming", fill: "var(--status-negative-fill)", fg: "var(--status-negative-text)" };
+
+        return (
         <section key={c.id} style={{ marginBottom: 28, border: "1px solid var(--usapt-border)", padding: 16 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
             <div>
-              <strong style={{ fontSize: 15 }}>Class starting {new Date(c.classStartAt).toLocaleDateString()}</strong>
-              <div style={{ fontSize: 12, color: "var(--usapt-text-muted)" }}>Orientation {new Date(c.orientationAt).toLocaleDateString()} · {c.members.length} members</div>
+              <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
+                <strong style={{ fontSize: 15 }}>Class starting {new Date(c.classStartAt).toLocaleDateString()}</strong>
+                <span style={{ fontSize: 10.5, fontWeight: 700, padding: "2px 9px", borderRadius: "var(--usapt-radius-pill)", background: phase.fill, color: phase.fg }}>
+                  {phase.label}
+                </span>
+              </div>
+              <div style={{ fontSize: 12, color: "var(--usapt-text-muted)" }}>
+                Orientation {new Date(c.orientationAt).toLocaleDateString()} · {c.members.length} members
+                {c.members.length ? ` · ${inClass} in class · ${graduated} graduated` : ""}
+              </div>
             </div>
             {c.members.some((m) => m.status === "confirmed_orientation") ? (
               <form action={startClassAction.bind(null, c.id)}>
@@ -96,7 +117,8 @@ export default async function CohortsPage() {
             </form>
           ) : null}
         </section>
-      ))}
+        );
+      })}
       {cohorts.length === 0 ? <p style={{ fontSize: 13, color: "var(--usapt-text-muted)" }}>No cohorts yet.</p> : null}
     </div>
   );

@@ -138,6 +138,71 @@ export async function computeFunnel(tx: Tx, client: PoolClient, filters: Analyti
   return { stages, totalSpend, spendIsAllocated: totalSpend > 0 };
 }
 
+export interface TrendPoint {
+  /** Monday 00:00 of the ISO week. */
+  weekStart: Date;
+  offers: number;
+  starts: number;
+}
+
+/**
+ * Weekly offers and class starts over the last N weeks, read off the
+ * append-only candidate_status_history. Counts DISTINCT candidates per week so
+ * a re-offer doesn't double-count. Empty weeks are filled in so the chart has a
+ * continuous x-axis. Reads through the RLS-scoped client, same as computeFunnel.
+ */
+export async function weeklyTrend(
+  client: PoolClient,
+  filters: AnalyticsFilters,
+  weeks = 8,
+): Promise<TrendPoint[]> {
+  const where: string[] = [];
+  const params: unknown[] = [];
+  const add = (clause: string, val: unknown) => {
+    params.push(val);
+    where.push(clause.replace("$?", `$${params.length}`));
+  };
+  if (filters.role) add("c.role_type = $?", filters.role);
+  if (filters.brandId) add("c.brand_id = $?", filters.brandId);
+  if (filters.marketId) add("c.market_id = $?", filters.marketId);
+  if (filters.source) add("c.source = $?", filters.source);
+
+  // Anchor to the start of the ISO week `weeks - 1` back, so we always return
+  // exactly `weeks` buckets ending with the current (partial) week.
+  const firstWeek = new Date();
+  firstWeek.setUTCHours(0, 0, 0, 0);
+  const dow = (firstWeek.getUTCDay() + 6) % 7; // Monday = 0
+  firstWeek.setUTCDate(firstWeek.getUTCDate() - dow - (weeks - 1) * 7);
+  add("h.created_at >= $?", firstWeek);
+
+  // Bucket in UTC and key on a plain YYYY-MM-DD string. `date_trunc('week', …)`
+  // on a timestamptz truncates in the DB *session* timezone, which would return
+  // e.g. 05:00Z for a UTC-5 session and never match a midnight-UTC key — so
+  // shift to UTC explicitly and compare as text, immune to session tz and to
+  // how the driver parses timestamps back into Date objects.
+  const { rows } = await client.query<{ wk: string; offers: string; starts: string }>(
+    `SELECT to_char(date_trunc('week', h.created_at AT TIME ZONE 'UTC'), 'YYYY-MM-DD') AS wk,
+            count(DISTINCT h.candidate_id) FILTER (WHERE h.to_status = 'offer')    AS offers,
+            count(DISTINCT h.candidate_id) FILTER (WHERE h.to_status = 'in_class') AS starts
+       FROM candidate_status_history h
+       JOIN candidates c ON c.id = h.candidate_id
+      WHERE ${where.join(" AND ")}
+      GROUP BY 1
+      ORDER BY 1`,
+    params,
+  );
+
+  const byWeek = new Map(rows.map((r) => [r.wk, r]));
+  const out: TrendPoint[] = [];
+  for (let i = 0; i < weeks; i++) {
+    const ws = new Date(firstWeek);
+    ws.setUTCDate(ws.getUTCDate() + i * 7);
+    const hit = byWeek.get(ws.toISOString().slice(0, 10));
+    out.push({ weekStart: ws, offers: Number(hit?.offers ?? 0), starts: Number(hit?.starts ?? 0) });
+  }
+  return out;
+}
+
 export interface ClassComparisonRow {
   cohortId: string;
   label: string;

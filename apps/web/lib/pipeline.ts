@@ -1,4 +1,4 @@
-import { and, desc, eq, gte, inArray, lte, type SQL } from "drizzle-orm";
+import { and, desc, eq, gte, ilike, inArray, lte, or, sql, type SQL } from "drizzle-orm";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import type * as dbSchema from "@usapt/db/schema";
 import { brands, candidates, cohortMembers, evaluationsSafe, markets } from "@usapt/db/schema";
@@ -24,11 +24,14 @@ export interface PipelineFilters {
   cohortId?: string;
   from?: Date;
   to?: Date;
+  /** Free-text lookup across name / email / phone ("did this person ever apply?"). */
+  q?: string;
 }
 
 export interface PipelineRow {
   id: string;
   name: string;
+  email: string;
   roleType: string;
   source: string;
   status: string;
@@ -49,6 +52,22 @@ export async function getPipeline(tx: Tx, filters: PipelineFilters): Promise<Pip
   if (filters.from) conds.push(gte(candidates.appliedAt, filters.from));
   if (filters.to) conds.push(lte(candidates.appliedAt, filters.to));
 
+  // Free-text lookup. Matches first/last individually AND the full name, so
+  // "maya robinson" hits as readily as "maya". Scoping stays with RLS — this
+  // only narrows the rows the caller could already see.
+  const q = filters.q?.trim();
+  if (q) {
+    const pattern = `%${q}%`;
+    const match = or(
+      ilike(candidates.firstName, pattern),
+      ilike(candidates.lastName, pattern),
+      ilike(sql`${candidates.firstName} || ' ' || ${candidates.lastName}`, pattern),
+      ilike(candidates.email, pattern),
+      ilike(sql`coalesce(${candidates.phone}, '')`, pattern),
+    );
+    if (match) conds.push(match);
+  }
+
   if (filters.cohortId) {
     const members = await tx.select({ id: cohortMembers.candidateId }).from(cohortMembers).where(eq(cohortMembers.cohortId, filters.cohortId));
     const ids = members.map((m) => m.id);
@@ -61,6 +80,7 @@ export async function getPipeline(tx: Tx, filters: PipelineFilters): Promise<Pip
       id: candidates.id,
       firstName: candidates.firstName,
       lastName: candidates.lastName,
+      email: candidates.email,
       roleType: candidates.roleType,
       source: candidates.source,
       status: candidates.status,
@@ -83,6 +103,7 @@ export async function getPipeline(tx: Tx, filters: PipelineFilters): Promise<Pip
     return {
       id: r.id,
       name: `${r.firstName} ${r.lastName}`,
+      email: r.email,
       roleType: r.roleType,
       source: r.source,
       status: r.status,

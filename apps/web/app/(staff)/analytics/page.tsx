@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { brands, markets } from "@usapt/db/schema";
 import { chartPalette } from "@usapt/design-tokens";
 import { withUser } from "@/lib/db-context";
-import { classComparison, computeFunnel, type AnalyticsFilters } from "@/lib/analytics";
+import { classComparison, computeFunnel, weeklyTrend, type AnalyticsFilters } from "@/lib/analytics";
 
 type SP = Record<string, string | undefined>;
 
@@ -15,13 +15,14 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
     source: (["indeed", "linkedin", "referral", "other"].includes(sp.source ?? "") ? sp.source : undefined) as AnalyticsFilters["source"],
   };
 
-  const { funnel, classes, brandRows, marketRows } = await withUser(async (tx, client, user) => {
+  const { funnel, trend, classes, brandRows, marketRows } = await withUser(async (tx, client, user) => {
     const funnel = await computeFunnel(tx, client, filters);
+    const trend = await weeklyTrend(client, filters, 8);
     const classes = await classComparison(tx, user.orgId);
     const brandRows = await tx.select().from(brands).where(eq(brands.orgId, user.orgId));
     const brandIds = new Set(brandRows.map((b) => b.id));
     const marketRows = (await tx.select().from(markets)).filter((m) => brandIds.has(m.brandId));
-    return { funnel, classes, brandRows, marketRows };
+    return { funnel, trend, classes, brandRows, marketRows };
   });
 
   const maxCount = Math.max(1, ...funnel.stages.map((s) => s.count));
@@ -74,6 +75,81 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
           </div>
         ))}
       </div>
+
+      {/* Unit economics — what each outcome costs. Same allocated-spend caveat
+          as the cost-per-stage table below. */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 2, background: "var(--usapt-border)", border: "1px solid var(--usapt-border)", borderTop: 0, marginBottom: 4 }}>
+        {[
+          { label: "Cost / applicant", stage: funnel.stages[0] },
+          { label: "Cost / offer", stage: funnel.stages[4] },
+          { label: "Cost / start", stage: funnel.stages[6] },
+          { label: "Cost / graduate", stage: funnel.stages[7] },
+        ].map((t) => (
+          <div key={t.label} style={{ background: "var(--usapt-bg)", padding: 14 }}>
+            <div style={{ fontSize: 10, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--usapt-text-muted)" }}>{t.label}</div>
+            <div style={{ fontSize: 18, fontWeight: 800, lineHeight: 1.1, marginTop: 6, fontVariantNumeric: "tabular-nums" }}>
+              {t.stage?.costPer != null ? `~${fmtMoney(t.stage.costPer)}` : "—"}
+            </div>
+            <div style={{ fontSize: 11, color: "var(--usapt-text-faint)", marginTop: 2, fontVariantNumeric: "tabular-nums" }}>
+              {t.stage ? `${t.stage.count} ${t.stage.label.toLowerCase()}` : ""}
+            </div>
+          </div>
+        ))}
+      </div>
+      {funnel.spendIsAllocated ? (
+        <div style={{ fontSize: 11, color: "var(--usapt-text-faint)" }}>
+          Cost figures are approximate — posting spend is allocated across the funnel.
+        </div>
+      ) : null}
+
+      {/* Weekly trend — offers vs class starts off candidate_status_history */}
+      <section style={{ marginTop: 34 }}>
+        <h4 style={{ fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--usapt-text-muted)", margin: "0 0 12px" }}>
+          Weekly offers &amp; starts — last 8 weeks
+        </h4>
+        {trend.every((p) => p.offers === 0 && p.starts === 0) ? (
+          <p style={{ fontSize: 13, color: "var(--usapt-text-muted)" }}>
+            No offers or class starts recorded in this window yet.
+          </p>
+        ) : (
+          <>
+            <div style={{ display: "flex", alignItems: "flex-end", gap: 10, height: 140, padding: "0 2px", borderBottom: "1px solid var(--usapt-border)" }}>
+              {trend.map((p) => {
+                const peak = Math.max(1, ...trend.map((x) => Math.max(x.offers, x.starts)));
+                const bar = (n: number, color: string) => (
+                  <div
+                    title={`${n}`}
+                    style={{ width: 12, height: `${(n / peak) * 116}px`, minHeight: n > 0 ? 3 : 0, background: color, borderRadius: "3px 3px 0 0" }}
+                  />
+                );
+                return (
+                  <div key={p.weekStart.toISOString()} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", gap: 4 }}>
+                    <div style={{ display: "flex", alignItems: "flex-end", gap: 3 }}>
+                      {bar(p.offers, chartPalette[0])}
+                      {bar(p.starts, chartPalette[2])}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <div style={{ display: "flex", gap: 10, marginTop: 6 }}>
+              {trend.map((p) => (
+                <div key={p.weekStart.toISOString()} style={{ flex: 1, textAlign: "center", fontSize: 10, color: "var(--usapt-text-faint)", fontVariantNumeric: "tabular-nums" }}>
+                  {p.weekStart.toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                </div>
+              ))}
+            </div>
+            <div style={{ display: "flex", gap: 16, marginTop: 12, fontSize: 11.5, color: "var(--usapt-text-muted)" }}>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                <span style={{ width: 10, height: 10, borderRadius: 2, background: chartPalette[0] }} /> Offers
+              </span>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                <span style={{ width: 10, height: 10, borderRadius: 2, background: chartPalette[2] }} /> Class starts
+              </span>
+            </div>
+          </>
+        )}
+      </section>
 
       <div style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 40, marginTop: 38, alignItems: "start" }}>
         <section>

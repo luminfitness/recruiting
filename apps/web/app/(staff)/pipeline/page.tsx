@@ -14,6 +14,7 @@ function filtersFrom(sp: SP): PipelineFilters {
     marketId: sp.market || undefined,
     source: (["indeed", "linkedin", "referral", "other"].includes(sp.source ?? "") ? sp.source : undefined) as PipelineFilters["source"],
     cohortId: sp.cohort || undefined,
+    q: sp.q || undefined,
   };
 }
 
@@ -89,6 +90,14 @@ export default async function PipelinePage({ searchParams }: { searchParams: Pro
           </div>
           <form style={{ display: "flex", gap: 6, alignItems: "center" }}>
             <input type="hidden" name="view" value={view} />
+            <input
+              type="search"
+              name="q"
+              defaultValue={filters.q ?? ""}
+              placeholder="Search name, email, phone…"
+              aria-label="Search candidates"
+              style={{ ...selStyle, width: 210 }}
+            />
             <select name="brand" defaultValue={filters.brandId ?? ""} style={selStyle}>
               <option value="">All brands</option>
               {brandRows.map((b) => (
@@ -135,6 +144,11 @@ export default async function PipelinePage({ searchParams }: { searchParams: Pro
                       <div style={{ fontSize: 11, color: "var(--usapt-text-muted)", marginTop: 3, textTransform: "capitalize" }}>
                         {card.roleType} · {card.marketName}
                       </div>
+                      <div style={{ marginTop: 6 }}>
+                        <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.04em", textTransform: "capitalize", padding: "2px 7px", borderRadius: "var(--usapt-radius-pill)", background: "var(--usapt-surface)", color: "var(--usapt-text-muted)" }}>
+                          {card.source}
+                        </span>
+                      </div>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 9 }}>
                         <StatusPill status={card.status} />
                         {card.gradeText !== "—" ? <span style={{ fontSize: 10.5, color: "var(--usapt-text-muted)" }}>{card.gradeText}</span> : null}
@@ -163,6 +177,7 @@ export default async function PipelinePage({ searchParams }: { searchParams: Pro
                 <tr key={r.id}>
                   <td style={{ padding: 12, borderBottom: "1px solid var(--usapt-border)", fontSize: 13.5, fontWeight: 600 }}>
                     <Link href={`/candidates/${r.id}`} style={{ color: "var(--usapt-ink)", textDecoration: "none" }}>{r.name}</Link>
+                    <div style={{ fontSize: 11.5, fontWeight: 400, color: "var(--usapt-text-muted)", marginTop: 2 }}>{r.email}</div>
                   </td>
                   <td style={{ padding: 12, borderBottom: "1px solid var(--usapt-border)", fontSize: 13, textTransform: "capitalize" }}>{r.roleType}</td>
                   <td style={{ padding: 12, borderBottom: "1px solid var(--usapt-border)", fontSize: 13, color: "var(--usapt-text-muted)" }}>{r.brandName}</td>
