@@ -3,11 +3,15 @@ import { requireUser, hasRole } from "@/lib/auth";
 import { isDemoMode } from "@/lib/demo";
 import { isFieldOnly, landingPathForRoles, primaryRoleLabel } from "@/lib/roles";
 import { getThemePref } from "@/lib/theme";
+import { DEMO_STEPS, getDemoSession, stepHref } from "@/lib/demo-walkthrough";
 import { Sidebar, type NavGroup } from "./Sidebar";
+import { DemoGuide } from "./DemoGuide";
 
 export default async function StaffLayout({ children }: { children: React.ReactNode }) {
   const user = await requireUser();
   const theme = await getThemePref();
+  // Guided client demo — only ever in demo mode, and only once started.
+  const demo = isDemoMode() ? await getDemoSession() : null;
 
   // Field-only roles get their own (field) app — never the operator console.
   if (isFieldOnly(user.roles)) redirect(landingPathForRoles(user.roles));
@@ -66,6 +70,15 @@ export default async function StaffLayout({ children }: { children: React.ReactN
         showSwitcher={isDemoMode()}
       />
       <main style={{ flex: 1, minWidth: 0, overflowY: "auto" }}>{children}</main>
+      {demo ? (
+        <DemoGuide
+          steps={DEMO_STEPS}
+          step={demo.step}
+          total={DEMO_STEPS.length}
+          hrefs={DEMO_STEPS.map((s) => stepHref(s, demo))}
+          name={demo.name}
+        />
+      ) : null}
     </div>
   );
 }

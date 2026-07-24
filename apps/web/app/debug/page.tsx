@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { StatusPill } from "@usapt/design-tokens";
 import { isDemoMode, listDemoUsers } from "@/lib/demo";
 import { becomeUserAction } from "./actions";
+import { startDemoAction } from "./demo-actions";
 
 // Demo-only, DB-backed, and — unlike every other page — it reads no cookies, so
 // Next would otherwise try to statically prerender it at build time and hit the
@@ -35,6 +36,35 @@ export default async function DebugPage() {
           Pick a persona to jump straight into their role-scoped view. Each sees a different queue and access level — this
           is the fastest way to walk through the whole product. (Demo-only; disabled in production.)
         </p>
+
+        {/* Guided client demo — walks one real prospect through the whole funnel. */}
+        <form
+          action={startDemoAction}
+          style={{
+            ...card,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 20,
+            marginBottom: 24,
+            borderColor: "var(--usapt-brand-blue)",
+          }}
+        >
+          <div>
+            <div style={{ fontSize: 17, fontWeight: 700 }}>▶ Run the guided demo</div>
+            <div style={{ fontSize: 12.5, color: "var(--usapt-text-muted)", marginTop: 3, maxWidth: 620, lineHeight: 1.45 }}>
+              Creates a fresh prospect and walks you through the whole process — sourcing, booking, interview, scoring,
+              decision, offer, class, analytics — with on-screen prompts telling you exactly what to click at each step.
+              Ten steps, all on the real screens. Sign in as Marc first for the full path.
+            </div>
+          </div>
+          <button
+            type="submit"
+            style={{ flex: "none", padding: "12px 20px", fontFamily: "inherit", fontWeight: 700, fontSize: 14, color: "#fff", background: "var(--usapt-brand-blue)", border: 0, borderRadius: "var(--usapt-radius-sm)", cursor: "pointer", whiteSpace: "nowrap" }}
+          >
+            Start demo →
+          </button>
+        </form>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 16 }}>
           {users.map((u) => (
