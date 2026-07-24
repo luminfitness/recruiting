@@ -56,28 +56,18 @@ export default async function ScorePage({ params }: { params: Promise<{ candidat
                 {c.hint ? <span style={{ fontSize: 11.5, color: "var(--usapt-text-faint)" }}>{c.hint}</span> : null}
               </div>
               <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
-                {scaleValues.map((v) => {
-                  const checked = existingGrades[c.key] === v;
-                  return (
-                    <label
-                      key={v}
-                      style={{
-                        flex: 1,
-                        textAlign: "center",
-                        padding: "10px 0",
-                        border: `1px solid ${checked ? "var(--usapt-brand-blue)" : "var(--usapt-border)"}`,
-                        background: checked ? "var(--status-motion-fill)" : "var(--usapt-surface-raised)",
-                        cursor: "pointer",
-                        fontWeight: 700,
-                        fontSize: 14,
-                        fontVariantNumeric: "tabular-nums",
-                      }}
-                    >
-                      <input type="radio" name={`crit_${c.key}`} value={v} defaultChecked={checked} style={{ display: "none" }} />
-                      {v}
-                    </label>
-                  );
-                })}
+                {scaleValues.map((v) => (
+                  <label key={v} className="usapt-score-option">
+                    <input
+                      type="radio"
+                      name={`crit_${c.key}`}
+                      value={v}
+                      defaultChecked={existingGrades[c.key] === v}
+                      aria-label={`${c.label}: ${v}`}
+                    />
+                    {v}
+                  </label>
+                ))}
               </div>
             </div>
           ))}

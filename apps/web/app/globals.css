@@ -27,6 +27,43 @@ pre {
   font-family: var(--usapt-font-mono);
 }
 
+/* Scorecard 1–5 options. The radio stays a real focusable control (visually
+   hidden, NOT display:none, so it's still keyboard-reachable) and the selected
+   look comes from :has(input:checked) — so the tile responds to a click
+   immediately without turning the page into a client component. */
+.usapt-score-option {
+  flex: 1;
+  text-align: center;
+  padding: 10px 0;
+  border: 1px solid var(--usapt-border);
+  border-radius: var(--usapt-radius-sm);
+  background: var(--usapt-surface-raised);
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+}
+.usapt-score-option input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+.usapt-score-option:hover {
+  border-color: var(--usapt-border-strong);
+}
+.usapt-score-option:has(input:checked) {
+  border-color: var(--usapt-brand-blue);
+  background: var(--status-motion-fill);
+  color: var(--status-motion-text);
+}
+.usapt-score-option:has(input:focus-visible) {
+  outline: 2px solid var(--usapt-brand-blue);
+  outline-offset: 2px;
+}
+
 .usapt-scroll::-webkit-scrollbar {
   height: 10px;
   width: 10px;
