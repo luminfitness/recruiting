@@ -28,7 +28,7 @@ export default async function TodayPage() {
 
   const data = await withUser(async (tx, client, user) => {
     const funnel = await computeFunnel(tx, client, {});
-    const queue = await listDecisionQueue(tx);
+    const queue = await listDecisionQueue(tx, user.orgId);
     const rules = await tx
       .select()
       .from(cadenceRules)

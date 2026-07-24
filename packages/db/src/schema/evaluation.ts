@@ -99,6 +99,13 @@ export const decisions = pgTable("decisions", {
     .notNull()
     .references(() => candidates.id, { onDelete: "cascade" }),
   outcome: decisionOutcomeEnum("outcome").notNull(),
+  /**
+   * What the grading policy suggested at the moment this decision was made
+   * (null when no suggestion was offered — incomplete bundle or a disclosure on
+   * file). Recorded purely so we can later ask "how often do we override the
+   * policy?" before anyone considers automating it. Never used to drive state.
+   */
+  suggestedOutcome: decisionOutcomeEnum("suggested_outcome"),
   decidedBy: uuid("decided_by")
     .notNull()
     .references(() => users.id),

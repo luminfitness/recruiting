@@ -40,6 +40,7 @@ export default async function StaffLayout({ children }: { children: React.ReactN
       ...(hasRole(user, "admin")
         ? [
             { label: "Organization", href: "/settings/organization" },
+            { label: "Grading", href: "/settings/grading" },
             { label: "Integrations", href: "/settings/integrations" },
             { label: "Cadence rules", href: "/settings/cadence-rules" },
             { label: "Activity log", href: "/settings/activity" },

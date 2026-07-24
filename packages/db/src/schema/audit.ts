@@ -26,6 +26,18 @@ export const thresholdSettings = pgTable("threshold_settings", {
   backupExpiryDays: integer("backup_expiry_days").notNull().default(30),
   /** Hours-before-session at which to send pre-interview reminders (FR-1.3). */
   reminderOffsetsHours: jsonb("reminder_offsets_hours").notNull().default(sql`'[24, 1]'::jsonb`),
+
+  /* — Decision-suggestion policy ---------------------------------------------
+     Drives the ADVISORY suggested disposition on the decision queue. Expressed
+     as a percentage of the rubric max so the policy keeps its meaning if the
+     scorecard's scale ever changes (evaluations are versioned, never re-graded).
+     Nothing here ever auto-commits a decision — a human always chooses. */
+  /** Grade % at or above which a candidate is offer-eligible. */
+  minPassPct: integer("min_pass_pct").notNull().default(70),
+  /** Grade % at or above which we suggest Backup; below it, Not selected. */
+  backupFloorPct: integer("backup_floor_pct").notNull().default(60),
+  /** Quiz score (0-100) at or above which the quiz counts as passed. */
+  quizPassScore: integer("quiz_pass_score").notNull().default(70),
 });
 
 /** Gives the cron tick idempotency per named job per time window without a durable queue product. */

@@ -99,6 +99,17 @@ service-role insert with strict validation, a deliberate RLS carve-out, and spam
 
 ---
 
+### I. Guided demo mode + client demo script — M–L (~2–3d)
+Not from the competitive review — a client-demo need. A `DEMO_MODE`-gated guided
+walkthrough that steps through the funnel (apply → invite/book → attend → grade +
+quiz → decision → offer/referral → class → graduate) moving one scripted prospect
+all the way through, plus a bullet-point script to talk over it.
+**Design intent: it drives the REAL state machine and the REAL screens** — a
+scripted fake would demo nothing. Skips settings/admin entirely. Needs a reset so
+the demo can be run repeatedly.
+⚠️ Sequencing: this serves a client demo far more directly than H does. If a demo
+is imminent, run I before H.
+
 ## Sequencing
 
 | Wave | Items | Effort | Schema? |

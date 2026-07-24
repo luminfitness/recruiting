@@ -12,6 +12,7 @@ import {
   markets,
   quizDefinitions,
   scorecardCriteriaVersions,
+  thresholdSettings,
 } from "@usapt/db/schema";
 import type { QuizSchema, ScorecardSchema } from "@usapt/db";
 import { transitionCandidate } from "@usapt/core";
@@ -21,6 +22,72 @@ import { createLocalReferral } from "./referrals";
 type Tx = NodePgDatabase<typeof dbSchema>;
 
 export type Disposition = "offer" | "backup" | "awaiting_review" | "not_selected";
+
+/**
+ * Org policy behind the ADVISORY suggested disposition. Percentages of the
+ * rubric max, not raw points, so the policy keeps its meaning if the scorecard
+ * scale ever changes. Lives in threshold_settings; editable at Settings → Grading.
+ */
+export interface GradingPolicy {
+  minPassPct: number;
+  backupFloorPct: number;
+  quizPassScore: number;
+}
+
+export const DEFAULT_GRADING_POLICY: GradingPolicy = { minPassPct: 70, backupFloorPct: 60, quizPassScore: 70 };
+
+export interface Suggestion {
+  /** null = deliberately no suggestion; a human decides unaided. */
+  outcome: Disposition | null;
+  reason: string;
+}
+
+export interface SuggestionInput {
+  gradeTotal: number | null;
+  gradeMax: number | null;
+  quizScore: number | null;
+  hasDisclosure: boolean;
+}
+
+/**
+ * Suggests a disposition from grade + quiz alone. Pure, so the policy is easy to
+ * test and reason about.
+ *
+ * A felony disclosure NEVER enters the calculation and never produces a
+ * suggestion — it suppresses one, so the call is made by a person looking at the
+ * whole picture. That is deliberate: automating an adverse decision off a
+ * criminal-history flag is exactly the blanket exclusion that EEOC guidance
+ * warns against, and fair-chance rules differ across the markets we operate in.
+ * The disclosure is still shown to the decision-maker (see revealDisclosure);
+ * we decline to *score* it, not to surface it.
+ *
+ * Nothing here ever commits a decision — the result is a hint on a button.
+ */
+export function suggestDisposition(policy: GradingPolicy, input: SuggestionInput): Suggestion {
+  if (input.hasDisclosure) {
+    return { outcome: null, reason: "Disclosure on file — decide this one directly." };
+  }
+  if (input.gradeTotal == null || input.gradeMax == null || input.gradeMax <= 0 || input.quizScore == null) {
+    return { outcome: null, reason: "Bundle incomplete — needs both an interview grade and a quiz score." };
+  }
+
+  const gradePct = Math.round((input.gradeTotal / input.gradeMax) * 100);
+  const quiz = input.quizScore;
+
+  if (gradePct < policy.backupFloorPct) {
+    return { outcome: "not_selected", reason: `Grade ${gradePct}% is below the ${policy.backupFloorPct}% floor.` };
+  }
+  if (gradePct < policy.minPassPct) {
+    return { outcome: "backup", reason: `Grade ${gradePct}% is under the ${policy.minPassPct}% pass mark but above the floor.` };
+  }
+  if (quiz < policy.quizPassScore) {
+    return {
+      outcome: "awaiting_review",
+      reason: `Grade ${gradePct}% passes but quiz ${quiz}% is under ${policy.quizPassScore}% — the signals disagree.`,
+    };
+  }
+  return { outcome: "offer", reason: `Grade ${gradePct}% and quiz ${quiz}% both clear the bar.` };
+}
 
 export interface QueueRow {
   candidateId: string;
@@ -33,6 +100,39 @@ export interface QueueRow {
   quizScore: string | null;
   hasDisclosure: boolean;
   status: string;
+  /** Advisory only — see suggestDisposition. */
+  suggestion: Suggestion;
+}
+
+/** The suggestion for one candidate, from the org policy + their safe-view scores. */
+export async function computeSuggestionFor(tx: Tx, orgId: string, candidateId: string): Promise<Suggestion> {
+  const policy = await getGradingPolicy(tx, orgId);
+  const [ev] = await tx
+    .select({
+      interviewGrade: evaluationsSafe.interviewGrade,
+      quizScore: evaluationsSafe.quizScore,
+      hasDisclosure: evaluationsSafe.hasDisclosure,
+    })
+    .from(evaluationsSafe)
+    .where(eq(evaluationsSafe.candidateId, candidateId));
+  const g = ev?.interviewGrade as { total?: number; max?: number } | null;
+  return suggestDisposition(policy, {
+    gradeTotal: g?.total ?? null,
+    gradeMax: g?.max ?? null,
+    quizScore: ev?.quizScore != null ? Number(ev.quizScore) : null,
+    hasDisclosure: Boolean(ev?.hasDisclosure),
+  });
+}
+
+/** The org's decision-suggestion policy, falling back to the defaults. */
+export async function getGradingPolicy(tx: Tx, orgId: string): Promise<GradingPolicy> {
+  const [row] = await tx.select().from(thresholdSettings).where(eq(thresholdSettings.orgId, orgId));
+  if (!row) return DEFAULT_GRADING_POLICY;
+  return {
+    minPassPct: row.minPassPct,
+    backupFloorPct: row.backupFloorPct,
+    quizPassScore: row.quizPassScore,
+  };
 }
 
 /**
@@ -41,7 +141,8 @@ export interface QueueRow {
  * disclosure shows as a flag (hasDisclosure), never the detail, and never in
  * this list (FRD Section 9). RLS + security_invoker keep it org/market scoped.
  */
-export async function listDecisionQueue(tx: Tx): Promise<QueueRow[]> {
+export async function listDecisionQueue(tx: Tx, orgId?: string): Promise<QueueRow[]> {
+  const policy = orgId ? await getGradingPolicy(tx, orgId) : DEFAULT_GRADING_POLICY;
   const rows = await tx
     .select({
       candidateId: candidates.id,
@@ -64,17 +165,26 @@ export async function listDecisionQueue(tx: Tx): Promise<QueueRow[]> {
 
   return rows.map((r) => {
     const g = r.interviewGrade as { total?: number; max?: number } | null;
+    const gradeTotal = g?.total ?? null;
+    const gradeMax = g?.max ?? null;
+    const hasDisclosure = Boolean(r.hasDisclosure);
     return {
       candidateId: r.candidateId,
       name: `${r.firstName} ${r.lastName}`,
       roleType: r.roleType,
       brandName: r.brandName,
       marketName: r.marketName,
-      gradeTotal: g?.total ?? null,
-      gradeMax: g?.max ?? null,
+      gradeTotal,
+      gradeMax,
       quizScore: r.quizScore,
-      hasDisclosure: Boolean(r.hasDisclosure),
+      hasDisclosure,
       status: r.status,
+      suggestion: suggestDisposition(policy, {
+        gradeTotal,
+        gradeMax,
+        quizScore: r.quizScore != null ? Number(r.quizScore) : null,
+        hasDisclosure,
+      }),
     };
   });
 }
@@ -202,7 +312,10 @@ export async function recordDecision(
   outcome: Disposition,
   notes: string | null,
 ): Promise<void> {
-  await tx.insert(decisions).values({ candidateId, outcome, decidedBy: actorUserId, notes });
+  // Computed here rather than passed in, so no caller can forget it and a
+  // crafted form post can't misreport what the policy actually said.
+  const { outcome: suggestedOutcome } = await computeSuggestionFor(tx, orgId, candidateId);
+  await tx.insert(decisions).values({ candidateId, outcome, suggestedOutcome, decidedBy: actorUserId, notes });
   await tx.insert(auditLog).values({
     orgId,
     actorUserId,

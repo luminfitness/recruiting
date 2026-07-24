@@ -8,7 +8,7 @@ import { Pool, type PoolClient } from "pg";
 import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
 import * as schema from "@usapt/db/schema";
 import { InvalidTransitionError } from "@usapt/core";
-import { recordDecision, revealDisclosure, bulkNotSelect, listDecisionQueue } from "./decisions";
+import { recordDecision, revealDisclosure, bulkNotSelect, listDecisionQueue, suggestDisposition, DEFAULT_GRADING_POLICY } from "./decisions";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const envPath = resolve(__dirname, "../../../.env.local");
@@ -18,6 +18,53 @@ const SERVICE_URL = process.env.SERVICE_DATABASE_URL;
 const run = SERVICE_URL ? describe : describe.skip;
 
 type Tx = NodePgDatabase<typeof schema>;
+
+describe("suggestDisposition (pure policy)", () => {
+  const p = DEFAULT_GRADING_POLICY; // 70 / 60 / 70
+  const base = { gradeTotal: 16, gradeMax: 20, quizScore: 88, hasDisclosure: false };
+
+  it("suggests offer when grade and quiz both clear the bar", () => {
+    expect(suggestDisposition(p, base).outcome).toBe("offer");
+  });
+
+  it("suggests awaiting_review when the grade passes but the quiz does not", () => {
+    const s = suggestDisposition(p, { ...base, quizScore: 55 });
+    expect(s.outcome).toBe("awaiting_review");
+    expect(s.reason).toMatch(/disagree/);
+  });
+
+  it("suggests backup between the floor and the pass mark", () => {
+    // 13/20 = 65% — above the 60% floor, below the 70% pass mark
+    expect(suggestDisposition(p, { ...base, gradeTotal: 13 }).outcome).toBe("backup");
+  });
+
+  it("suggests not_selected below the floor", () => {
+    // 11/20 = 55%
+    expect(suggestDisposition(p, { ...base, gradeTotal: 11 }).outcome).toBe("not_selected");
+  });
+
+  it("NEVER suggests off a felony disclosure — it suppresses the suggestion entirely", () => {
+    // Same scores that would otherwise be a clear offer, and a clear not_selected.
+    const strong = suggestDisposition(p, { ...base, hasDisclosure: true });
+    const weak = suggestDisposition(p, { ...base, gradeTotal: 4, hasDisclosure: true });
+    expect(strong.outcome).toBeNull();
+    expect(weak.outcome).toBeNull();
+    // critically: never an automated adverse outcome
+    expect(weak.outcome).not.toBe("not_selected");
+  });
+
+  it("declines to suggest on an incomplete bundle", () => {
+    expect(suggestDisposition(p, { ...base, quizScore: null }).outcome).toBeNull();
+    expect(suggestDisposition(p, { ...base, gradeTotal: null }).outcome).toBeNull();
+    expect(suggestDisposition(p, { ...base, gradeMax: 0 }).outcome).toBeNull();
+  });
+
+  it("honours a custom org policy rather than the defaults", () => {
+    const strict = { minPassPct: 90, backupFloorPct: 80, quizPassScore: 95 };
+    // 16/20 = 80% — an offer under defaults, only a backup under this policy
+    expect(suggestDisposition(strict, base).outcome).toBe("backup");
+  });
+});
 
 run("decisions & disposition", () => {
   const pool = new Pool({ connectionString: SERVICE_URL });
@@ -93,6 +140,24 @@ run("decisions & disposition", () => {
     const audits = await db.select().from(schema.auditLog).where(eq(schema.auditLog.resourceId, id));
     expect(audits.some((a) => a.action === "decision_recorded")).toBe(true);
     expect(audits.some((a) => a.action === "referred_local")).toBe(true);
+  });
+
+  it("records what the policy suggested alongside the human decision, so overrides are visible", async () => {
+    // Factory scores are 18/20 (90%) with quiz 67 — grade passes, quiz doesn't,
+    // so the policy suggests awaiting_review. The human overrides with an offer.
+    const id = await makeEvaluated();
+    await tx((t, client) => recordDecision(t, client, orgId, id, userId, "offer", null));
+    const [d] = await db.select().from(schema.decisions).where(eq(schema.decisions.candidateId, id));
+    expect(d.outcome).toBe("offer");
+    expect(d.suggestedOutcome).toBe("awaiting_review");
+  });
+
+  it("stores no suggestion when a disclosure is on file, whatever the scores", async () => {
+    const id = await makeEvaluated(true);
+    await tx((t, client) => recordDecision(t, client, orgId, id, userId, "offer", null));
+    const [d] = await db.select().from(schema.decisions).where(eq(schema.decisions.candidateId, id));
+    expect(d.outcome).toBe("offer");
+    expect(d.suggestedOutcome).toBeNull();
   });
 
   it("cannot record a decision on a candidate that isn't evaluated", async () => {

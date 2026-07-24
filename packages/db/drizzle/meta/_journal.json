@@ -57,6 +57,13 @@
       "when": 1784317558657,
       "tag": "0007_cohort_org_rls",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1784910287729,
+      "tag": "0008_bizarre_jack_flag",
+      "breakpoints": true
     }
   ]
 }

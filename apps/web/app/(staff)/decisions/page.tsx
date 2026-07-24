@@ -4,8 +4,15 @@ import { withUser } from "@/lib/db-context";
 import { listDecisionQueue } from "@/lib/decisions";
 import { bulkNotSelectAction } from "./actions";
 
+const SUGGESTION_LABEL: Record<string, string> = {
+  offer: "Offer",
+  backup: "Backup",
+  awaiting_review: "Awaiting review",
+  not_selected: "Not selected",
+};
+
 export default async function DecisionsPage() {
-  const rows = await withUser((tx) => listDecisionQueue(tx));
+  const rows = await withUser((tx, _client, user) => listDecisionQueue(tx, user.orgId));
 
   const th: React.CSSProperties = {
     textAlign: "left",
@@ -40,6 +47,7 @@ export default async function DecisionsPage() {
               <th style={{ ...th, textAlign: "right" }}>Grade</th>
               <th style={{ ...th, textAlign: "right" }}>Quiz</th>
               <th style={th}>Flags</th>
+              <th style={th}>Suggested</th>
               <th style={th}>Status</th>
               <th style={th}></th>
             </tr>
@@ -70,6 +78,15 @@ export default async function DecisionsPage() {
                     </span>
                   ) : null}
                 </td>
+                <td style={td} title={r.suggestion.reason}>
+                  {r.suggestion.outcome ? (
+                    <span style={{ fontSize: 11.5, fontWeight: 700, padding: "3px 9px", borderRadius: "var(--usapt-radius-pill)", background: "var(--usapt-brand-soft)", color: "var(--usapt-brand-ink)", whiteSpace: "nowrap" }}>
+                      {SUGGESTION_LABEL[r.suggestion.outcome]}
+                    </span>
+                  ) : (
+                    <span style={{ fontSize: 11.5, color: "var(--usapt-text-faint)" }}>—</span>
+                  )}
+                </td>
                 <td style={td}>
                   <StatusPill status={r.status} />
                 </td>
@@ -82,7 +99,7 @@ export default async function DecisionsPage() {
             ))}
             {rows.length === 0 ? (
               <tr>
-                <td style={{ ...td, color: "var(--usapt-text-muted)" }} colSpan={9}>
+                <td style={{ ...td, color: "var(--usapt-text-muted)" }} colSpan={10}>
                   No candidates awaiting a decision. Bundles appear here once both the grade and quiz are in.
                 </td>
               </tr>
